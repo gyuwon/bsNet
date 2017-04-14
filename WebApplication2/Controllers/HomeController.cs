@@ -1,35 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using com.bsidesoft.cs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApplication2.Controllers
-{
+namespace WebApplication2.Controllers {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private bs bs;
+        public HomeController(bs b)
         {
-            return View();
+            bs = b;
         }
-
-        public IActionResult About()
+        public IActionResult Index(string a, int b)
         {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View();
+            bs.dbQuery("local", "a", "select * from test where title=@title@");
+            var rs = bs.dbSelect("local:a", "hika");
+            return Json(new {data = rs, a = 3});
         }
     }
 }
