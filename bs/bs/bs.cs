@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 namespace com.bsidesoft.cs {
@@ -35,9 +33,8 @@ namespace com.bsidesoft.cs {
             }
             return v;
         }
-        public bs(IConfigurationRoot configuration, ILogger<bs> l) {
+        public bs(ILogger<bs> l) {
             if(logger == null) logger = l;
-            if(!dbInited) dbInit(configuration);
         }
     }
 }

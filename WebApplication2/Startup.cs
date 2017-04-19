@@ -17,9 +17,7 @@ namespace WebApplication2 {
             Configuration = builder.Build();
         }
         public void ConfigureServices(IServiceCollection services) {
-            services.AddSingleton<IConfigurationRoot>(_ => Configuration);
-            services.AddScoped<bs>();
-            bs.service(services);
+            bs.service(Configuration, services);
         }
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory) {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));

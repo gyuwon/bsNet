@@ -60,7 +60,6 @@ namespace com.bsidesoft.cs {
         }
         private static ConcurrentDictionary<string, SqlConnection> conns = new ConcurrentDictionary<string, SqlConnection>();
         private static ConcurrentDictionary<string, Query> queries = new ConcurrentDictionary<string, Query>();
-        private static bool dbInited = false;
         private static void dbInit(IConfigurationRoot configuration) {
             foreach(var k in configuration.GetSection("ConnectionStrings").GetChildren()) dbConn(k.Key, k.Value);
             var query = configuration.GetSection("query");
