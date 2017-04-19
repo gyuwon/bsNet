@@ -1,71 +1,43 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Concurrent;
-using System.IO;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace com.bsidesoft.cs {
     public partial class bs{
-        public static readonly object OK = new { }, FAIL = new { };
-        public static bool isOK(object v) {
-            return v == OK;
-        }
-        public static bool isFAIL(object v) {
-            return v == FAIL;
-        }
-
-        private static ILogger logger;
-        public static void setLogger(ILogger l) {
-            logger = l;
-        }
-        public static void log(params string[] args) {
-            logger.LogInformation(String.Join(", ", args));
-        }
-
-        public static int toI(object v) {
-            if(v is string) return Convert.ToInt32((string)v);
-            return (int)v;
-        }
-        public static float toF(object v) {
-            if(v is string) return Convert.ToSingle((string)v);
-            return (float)v;
-        }
-        public static double toD(object v) {
-            if(v is string) return Convert.ToDouble((string)v);
-            return (double)v;
-        }
-        public static string toS(object v) {
-            if(v is string) return (string)v;
-            return v + "";
-        }
-        public static Dictionary<string, string> opt(string[] kv) {
-            Dictionary<string, string> opt = null;
-            if(kv.Length > 0) {
-                if(kv.Length % 2 != 0) {
-                    log("opt:invalid params(length needs even:...k,v)" + kv.Length);
-                    return opt;
-                }
-                opt = new Dictionary<string, string>();
-                for(var i = 0; i < kv.Length;) opt.Add(kv[i++], kv[i++]);
-            }
-            return opt;
-        }
-
-        public bs() {
-        }
-        private Dictionary<string, object> s = new Dictionary<string, object>();
-        public object S(params object[] kv) {
-            object v = null;
+        private static ConcurrentDictionary<string, object> _S = new ConcurrentDictionary<string, object>();
+        public static object S(params object[] kv) {
+            object v = null, n;
             for(var i = 0; i < kv.Length;) {
                 string k = (string)kv[i++];
-                if(i == kv.Length) return s[k];
+                if(i == kv.Length) {
+                    _S.TryGetValue(k, out n);
+                    return n;
+                }
                 v = kv[i++];
-                if(v == null) s.Remove(k);
-                s.Add(k, v);
+                if(v == null) _S.TryRemove(k, out n);
+                _S.TryAdd(k, v);
             }
             return v;
+        }
+        private ConcurrentDictionary<string, object> _s = new ConcurrentDictionary<string, object>();
+        public object s(params object[] kv) {
+            object v = null, n;
+            for(var i = 0; i < kv.Length;) {
+                string k = (string)kv[i++];
+                if(i == kv.Length) {
+                    _s.TryGetValue(k, out n);
+                    return n;
+                }
+                v = kv[i++];
+                if(v == null) _s.TryRemove(k, out n);
+                _s.TryAdd(k, v);
+            }
+            return v;
+        }
+        public bs(IConfigurationRoot configuration, ILogger<bs> l) {
+            if(logger == null) logger = l;
+            if(!dbInited) dbInit(configuration);
         }
     }
 }

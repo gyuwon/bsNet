@@ -14,14 +14,14 @@ namespace test
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("C:\\Users\\user\\documents\\visual studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
-            var bs = new bs(builder.Build());
+            var bs = new bs(builder.Build(), null);
         }
         [Fact]
         public void Test1()
         {
-            bs.Vali.add("test1", "a", "int", "b", "float");
+            bs.vali("test1", "a", "int", "b", "float");
             var result = bs.valiResult();
-            var isOK = bs.Vali.get("test1").check(out result, "a", "1242", "b", "33.3452");
+            var isOK = bs.vali("test1").check(out result, "a", "1242", "b", "33.3452");
             Assert.Equal(isOK, true);
             Assert.Equal(result["a"].value, 1242);
             Assert.Equal(result["b"].value, 33.3452F);
