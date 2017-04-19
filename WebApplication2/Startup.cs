@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace WebApplication2 {
     public class Startup {
@@ -14,8 +15,7 @@ namespace WebApplication2 {
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            bs = new bs();
-            bs.dbConn("local", Configuration.GetSection("ConnectionStrings").GetSection("DefaultConnection").Value);
+            bs = new bs(Configuration);
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -27,7 +27,7 @@ namespace WebApplication2 {
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory) {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-            bs.logger = loggerFactory.CreateLogger("bs");
+            bs.setLogger(loggerFactory.CreateLogger("bs"));
 
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();

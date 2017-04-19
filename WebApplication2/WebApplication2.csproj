@@ -30,6 +30,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="test\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\bs\bs.csproj" />
   </ItemGroup>
 
 </Project>

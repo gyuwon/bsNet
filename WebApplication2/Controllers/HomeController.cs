@@ -2,18 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApplication2.Controllers {
-    public class HomeController : Controller
-    {
+    public class HomeController:Controller {
         private bs bs;
-        public HomeController(bs b)
-        {
+        public HomeController(bs b) {
             bs = b;
         }
-        public IActionResult Index(string a, int b)
-        {
-            bs.dbQuery("local", "a", "select * from test where title=@title@");
-            var rs = bs.dbSelect("local:a", "hika");
-            return Json(new {data = rs, a = 3});
+        public IActionResult Index() {
+            var err = bs.dbError();
+            var rs = bs.dbSelect(out err, "remote:a", "title", "1PD시험a");
+            return Json(new { data = rs, a = 3 });
         }
     }
 }

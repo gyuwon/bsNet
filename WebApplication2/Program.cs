@@ -11,6 +11,7 @@ namespace WebApplication2
     {
         public static void Main(string[] args)
         {
+            var a = Directory.GetCurrentDirectory();
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())

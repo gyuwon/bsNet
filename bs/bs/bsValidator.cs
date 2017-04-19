@@ -3,9 +3,15 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Configuration;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
+
+        public bs(IConfigurationRoot configuration) {
+            dbInit(configuration);
+        }
+        
         public class Rule {
             private static ConcurrentDictionary<string, Rule> RULES = new ConcurrentDictionary<string, Rule>();
             public static Rule get(string key) {
@@ -44,11 +50,19 @@ namespace com.bsidesoft.cs {
                 add("alphanum", new RuleVali(new RegularExpressionAttribute("^[a-z0-9]+$")));
                 add("1alpha", new RuleVali(new RegularExpressionAttribute("^[a-z]")));
                 add("1ALPHA", new RuleVali(new RegularExpressionAttribute("^[A-Z]")));
-                /*
+                //type
                 add("int", new Rule((value, arg, safe)=>{
-
-                });
-                */
+                    if(value is string) {
+                        if(!new RegularExpressionAttribute("^-?[0-9]+$").IsValid(value)) return FAIL;
+                    }
+                    return toI(value);
+                }));
+                add("float", new Rule((value, arg, safe) => {
+                    if(value is string) {
+                        if(!new RegularExpressionAttribute("^-?[0-9.]+$").IsValid(value)) return FAIL;
+                    }
+                    return toF(value);
+                }));
             }
         }
         public class RuleVali:Rule {
@@ -88,11 +102,13 @@ namespace com.bsidesoft.cs {
                 internal string[] arg;
             }
             private static Item OR = new Item(), AND = new Item();
-            private string key;
             private List<Item> rules = new List<Item>();
-            internal RuleSet(string k, string rules) {
-                key = k;
+            private string baseMsg;
+            internal RuleSet(string rules) {
                 parse(rules);
+            }
+            internal void setMsg(string key) {
+                baseMsg = key;
             }
             internal ValiResult check(object value, Dictionary<string, object> safe) {
                 object isOk = OK;
@@ -102,19 +118,25 @@ namespace com.bsidesoft.cs {
                     var item = rules[i++];
                     var temp = Rule.get(item.rule).isValid(value, item.arg, safe);
                     if(logic == AND) {
-                        if(temp == FAIL) {
-                            r.value = value;
-                            r.msg = Msg.get(item.msg).msg(value, item.rule, item.arg, safe);
+                        if(temp == FAIL) { 
+                            var m = item.msg;
+                            if(m == "") m = baseMsg;
+                            var message = Msg.get(m);
+                            if(message == null) r.msg = "error : " + value;
+                            else r.msg = message.msg(value, item.rule, item.arg, safe);
                             r.result = FAIL;
                             break;
                         } else value = temp;
                     } else if(temp != FAIL) value = temp;
                 }
+                r.value = value;
                 return r;
             }
             private void parse(string rule) {
                 bool isToken = true;
                 rules.Clear();
+                rule = rule.Trim();
+                if(rule.Length == 0) return;
                 foreach(var token in rule.Split('|')) {
                     int i;
                     string ruleKey = token, msg;
@@ -141,9 +163,10 @@ namespace com.bsidesoft.cs {
                 }
             }
         }
-        class Vali {
+        public static Dictionary<string, ValiResult> valiResult() { return null; }
+        public class Vali {
             private static ConcurrentDictionary<string, Vali> VALI = new ConcurrentDictionary<string, Vali>();
-            static Vali get(string key) {
+            public static Vali get(string key) {
                 Vali vali;
                 if(!VALI.TryGetValue(key, out vali)) {
                     log("Vali.get:fail to get - " + key);
@@ -152,33 +175,51 @@ namespace com.bsidesoft.cs {
                 return vali;
             }
             public static void add(string key, params string[] kv) {
+                add(key, opt(kv));
+            }
+            public static void add(string key, Dictionary<string, string> opt) {
                 if(VALI.ContainsKey(key)) {
                     log("Vali.add:exist key - " + key);
                     return;
                 }
+                if(opt == null) return;
                 Vali vali = new Vali();
-                for(var i = 0; i < kv.Length;) {
-                    string k = kv[i++], v = kv[i++];
-                    vali.add(k, new RuleSet(k, v));
-                }
+                foreach(var k in opt) vali.add(k.Key, new RuleSet(k.Value));
                 if(!VALI.TryAdd(key, vali)) log("Vali.add:fail to add - " + key);
             }
             private Dictionary<string, RuleSet> ruleSets = new Dictionary<string, RuleSet>();
+            private string msg;
             private void add(string key, RuleSet r) {
                 ruleSets.Add(key, r);
             }
+            internal void add(string key, string r) {
+                ruleSets.Add(key, new RuleSet(r));
+            }
             public bool check(out Dictionary<string, ValiResult> result, params string[] kv) {
+                return check(out result, opt(kv));
+            }
+            public bool check(out Dictionary<string, ValiResult> result, Dictionary<string,string> opt) {
                 bool r = true;
                 var safe = new Dictionary<string, object>();
                 result = new Dictionary<string, ValiResult>();
-                for(var i = 0; i < kv.Length;) {
-                    string k = kv[i++], v = kv[i++];
-                    var vr = ruleSets[k].check(v, safe);
-                    result.Add(k, vr);
+                foreach(var rule in ruleSets) {
+                    var v = opt[rule.Key];
+                    if(v == null) {
+                        r = false;
+                        log("check:fail to get opt - " + rule.Key);
+                        break;
+                    }
+                    rule.Value.setMsg(msg);
+                    var vr = rule.Value.check(v, safe);
+                    result.Add(rule.Key, vr);
                     if(vr.result == FAIL) r = false;
-                    else safe.Add(k, vr.value);
+                    else safe.Add(rule.Key, vr.value);
                 }
                 return r;
+            }
+
+            internal void setMsg(string q) {
+                msg = q;
             }
         }
     }
