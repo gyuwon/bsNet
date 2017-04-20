@@ -24,9 +24,13 @@ namespace com.bsidesoft.cs {
                 add("1alpha", new RuleVali(new RegularExpressionAttribute("^[a-z]")));
                 add("1ALPHA", new RuleVali(new RegularExpressionAttribute("^[A-Z]")));
                 //type
+                add("equalto", new Rule((value, arg, safe) => {
+                    return value == safe[arg[0]] ? value : FAIL;
+                }));
                 add("int", new Rule((value, arg, safe) => {
-                    if(value is string) {
-                        if(!new RegularExpressionAttribute("^-?[0-9]+$").IsValid(value)) return FAIL;
+                    if (value is string)
+                    {
+                        if (!new RegularExpressionAttribute("^-?[0-9]+$").IsValid(value)) return FAIL;
                     }
                     return toI(value);
                 }));

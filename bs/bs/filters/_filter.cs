@@ -8,6 +8,7 @@ namespace com.bsidesoft.cs {
         public static void service(IConfigurationRoot configuration, IServiceCollection services) {
             if(bsInited) throw new Exception();
             bsInited = true;
+            if (services == null) return;
             services.AddScoped<bs>();
             services.AddMvc(opt => {
 
