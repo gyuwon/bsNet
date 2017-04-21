@@ -11,6 +11,7 @@ namespace com.bsidesoft.cs {
             if (services == null) return;
             services.AddScoped<bs>();
             services.AddMvc(opt => {
+                //opt.Filters.Add()
 
             });
             dbInit(configuration);

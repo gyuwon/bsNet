@@ -12,7 +12,7 @@ namespace com.bsidesoft.cs {
                 add("html", new RuleVali(new DataTypeAttribute(DataType.Html)));
                 add("image", new RuleVali(new DataTypeAttribute(DataType.ImageUrl)));
                 //base
-                add("ip", new RuleVali(new RegularExpressionAttribute("^((([0-9])|(1[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))[.]){3}(([0-9])|(1[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))$")));
+                add("ip", new RuleVali(new RegularExpressionAttribute("^((([0-9])|(1[0-9]{1,2})|(2[0-4][0-9])|(25[0-5]))[.]){3}(([0-9])|([1-9][0-9])|(2[0-4][0-9])|(25[0-5]))$")));
                 add("url", new RuleVali(new DataTypeAttribute(DataType.Url)));
                 add("email", new RuleVali(new DataTypeAttribute(DataType.EmailAddress)));
                 add("korean", new RuleVali(new RegularExpressionAttribute("^[ㄱ-힣]+$")));

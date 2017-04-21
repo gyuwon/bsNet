@@ -8,9 +8,8 @@ namespace WebApplication2.Controllers {
             bs = b;
         }
         public IActionResult Index() {
-            var err = bs.valiResult();
-            var rs = bs.dbSelect(out err, "remote:a", "title", "1PD시험a");
-            bs.log("tteee");
+            var r = bs.valiResult();
+            var rs = bs.dbSelect(out r, "remote:a", "title", "1PD시험a");
             return Json(new { data = rs, a = 3 });
         }
     }
