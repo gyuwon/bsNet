@@ -35,7 +35,7 @@ namespace com.bsidesoft.cs {
                 }
                 return r;
             }
-            internal void setMsg(string q) {
+            public void setMsg(string q) {
                 msg = q;
             }
         }
