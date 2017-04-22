@@ -1,16 +1,61 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
-        public class bsFilterAction:IActionFilter {
+
+        public class FilterAction:Attribute, IFilterFactory, IActionFilter {
+            public bool IsReusable => true;
+            public IFilterMetadata CreateInstance(IServiceProvider serviceProvider) {
+                return new FilterAction();
+            }
+            private static ConcurrentDictionary<string, MethodInfo> methods = new ConcurrentDictionary<string, MethodInfo>();
+
             public void OnActionExecuting(ActionExecutingContext c) {
-                //c의 주소에 따라 bs.S 레벨에 저장된 람다를 호출
+                if(!invoke(c)) {
+                    invokeJson(c);
+                }
             }
             public void OnActionExecuted(ActionExecutedContext c) {
-                
+
+            }
+            private bool invokeJson(ActionExecutingContext c) {
+                var json = file<JObject>(false, "Controllers", c.RouteData.Values["controller"] + "", c.RouteData.Values["action"] + ".json");
+                if(json == null) return false;
+                ((Controller)c.Controller).ViewBag.bsBefore = json;
+                return true;
+            }
+            private bool invoke(ActionExecutingContext c) {
+                var action = "_" + c.RouteData.Values["action"];
+                var key = c.RouteData.Values["controller"] + action;
+                var controller = (Controller)c.Controller;
+                if(!methods.ContainsKey(key)) {
+                    var type = controller.GetType();
+                    if(type == null) {
+                        log("FilterAction.getMethod:fail to get Type - " + key);
+                        return false;
+                    } else {
+                        var method = type.GetMethod(action);
+                        if(method == null) {
+                            log("FilterAction.getMethod:fail to get method - " + key);
+                            return false;
+                        } else if(!methods.TryAdd(key, method)) {
+                            log("FilterAction.getMethod:fail to add method - " + key);
+                            return false;
+                        }
+                    }
+                }
+                MethodInfo result;
+                if(!methods.TryGetValue(key, out result)) {
+                    log("FilterAction.getMethod:fail to get method - " + key);
+                    return false;
+                }
+                controller.ViewBag.bsBefore = result.Invoke(controller, new object[]{c});
+                return true;
             }
         }
     }

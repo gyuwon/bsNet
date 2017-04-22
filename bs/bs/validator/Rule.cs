@@ -30,41 +30,41 @@ namespace com.bsidesoft.cs {
                     if(value is string) {
                         if(!I.IsValid(value)) return FAIL;
                     }
-                    return toI(value);
+                    return to<int>(value);
                 }));
                 add("float", new Rule((value, arg, safe) => {
                     if(value is string) {
                         if(!F.IsValid(value)) return FAIL;
                     }
-                    return toF(value);
+                    return to<float>(value);
                 }));
                 add("equalto", new Rule((value, arg, safe) => {
                     var s = safe[arg[0]];
-                    if(value is string) return (string)value == (string)s ? value : FAIL;
-                    if(value is int) return (int)value == toI(s) ? value : FAIL;
-                    if(value is float) return (float)value == toF(s) ? value : FAIL;
-                    if(value is double) return (double)value == toD(s) ? value : FAIL;
-                    if(value is bool) return (bool)value == toB(s) ? value : FAIL;
+                    if(value is string) return (string)value == to<string>(s) ? value : FAIL;
+                    if(value is int) return (int)value == to<int>(s) ? value : FAIL;
+                    if(value is float) return (float)value == to<float>(s) ? value : FAIL;
+                    if(value is double) return (double)value == to<double>(s) ? value : FAIL;
+                    if(value is bool) return (bool)value == to<bool>(s) ? value : FAIL;
                     return FAIL;
                 }));
                 add("max", new Rule((value, arg, safe) => {
-                    var l = toF(arg[0]);
+                    var l = to<float>(arg[0]);
                     if(value is string) return ((string)value).Length < l ? value : FAIL;
-                    else return toF(value) < l ? value : FAIL;
+                    else return to<float>(value) < l ? value : FAIL;
                 }));
                 add("min", new Rule((value, arg, safe) => {
-                    var l = toF(arg[0]);
+                    var l = to<float>(arg[0]);
                     if(value is string) return ((string)value).Length > l ? value : FAIL;
-                    else return toF(value) > l ? value : FAIL;
+                    else return to<float>(value) > l ? value : FAIL;
                 }));
                 add("length", new Rule((value, arg, safe) => {
-                    var l = toF(arg[0]);
+                    var l = to<float>(arg[0]);
                     if(value is string) return ((string)value).Length == l ? value : FAIL;
-                    else return toF(value) == l ? value : FAIL;
+                    else return to<float>(value) == l ? value : FAIL;
                 }));
                 add("range", new Rule((value, arg, safe) => {
-                    float l = toF(arg[0]), m = toF(arg[1]);
-                    var v = value is string ? ((string)value).Length : toF(value);
+                    float l = to<float>(arg[0]), m = to<float>(arg[1]);
+                    var v = value is string ? ((string)value).Length : to<float>(value);
                     return l <= v && v <= m ? value : FAIL;
                 }));
             }
