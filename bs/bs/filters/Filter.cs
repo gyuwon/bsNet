@@ -16,12 +16,13 @@ namespace com.bsidesoft.cs {
             private static ConcurrentDictionary<string, MethodInfo> methods = new ConcurrentDictionary<string, MethodInfo>();
 
             public void OnActionExecuting(ActionExecutingContext c) {
+                //head일반처리
                 if(!invoke(c)) {
                     invokeJson(c);
                 }
             }
             public void OnActionExecuted(ActionExecutedContext c) {
-
+                //head일반처리
             }
             private bool invokeJson(ActionExecutingContext c) {
                 var json = file<JObject>(false, "Controllers", c.RouteData.Values["controller"] + "", c.RouteData.Values["action"] + ".json");

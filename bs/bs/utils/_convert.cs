@@ -16,9 +16,6 @@ namespace com.bsidesoft.cs {
             {typeof(JObject), "jobject"}
         };
         public static T to<T>(object v) {
-            var a = 12.3F;
-            var b = 12;
-            var c = (int)a + b;
             return (T)Convert.ChangeType(v, typeof(T));
         }
         /*
