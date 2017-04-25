@@ -67,6 +67,17 @@ namespace com.bsidesoft.cs {
                     var v = value is string ? ((string)value).Length : toF(value);
                     return l <= v && v <= m ? value : FAIL;
                 }));
+                add("in", new Rule((value, arg, safe) => {
+                    var r = 0;
+                    r = Array.IndexOf(arg, value);
+                    /*
+                    if(value is string) {
+                        r = toS(arg).IndexOf((string)value);
+                    }else if(value is Array) {
+                        
+                    }*/
+                    return r > -1 ? value : FAIL;
+                }));
             }
             private static ConcurrentDictionary<string, Rule> RULES = new ConcurrentDictionary<string, Rule>();
             public static Rule get(string key) {
