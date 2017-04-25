@@ -19,20 +19,19 @@ namespace test
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
-            var bs = new bs(new LoggerFactory().AddConsole().AddDebug().CreateLogger<bs>());
+            var bs = new bs(null, null);
             bs.service(builder.Build(), null);
         }
         /*
         [Fact]
         public void Test0() {
-            bs.vali("test0", "a", "creditCard", "b", "html", "c", "image");
+            bs.vali("test0", "a", "html", "b", "image");
             var result = bs.valiResult();
 
-            var isOK = bs.vali("test0").check(out result, "a", "534292000149500", "b", "<div>div<span>span</span></div><br>", "c", "asdfasdf.jpg");
+            var isOK = bs.vali("test0").check(out result, "a", "<div>div<span>span</span></div><br>", "b", "asdfasdf.jpg");
             Assert.Equal(isOK, true);
-            Assert.Equal(result["a"].value, "5342920001495006");
-            Assert.Equal(result["b"].value, "<div>div<span>span</span></div><br>");
-            Assert.Equal(result["c"].value, "asdfasdf.jpg");
+            Assert.Equal(result["a"].value, "<div>div<span>span</span></div><br>");
+            Assert.Equal(result["b"].value, "asdfasdf.jpg");
         }
         [Fact]
         public void Test1() {
@@ -120,13 +119,32 @@ namespace test
             Assert.False(bs.isOK(result["c"].value));
         }
         [Fact]
+        public void Test11() {
+            bs.vali("test11", "a", "max[5]", "b", "int|max[5]");
+            var result = bs.valiResult();
+            var isOK = bs.vali("test11").check(out result, "a", "abcd", "b", "3");
+            Assert.Equal(isOK, true);
+            Assert.Equal(result["a"].value, "abcd");
+            Assert.Equal(result["b"].value, 3);
+
+            var isFAIL = bs.vali("test11").check(out result, "a", "abcded", "b", "8");
+            Assert.Equal(isFAIL, false);
+            Assert.False(bs.isOK(result["a"].value));
+            Assert.False(bs.isOK(result["b"].value));
+        }
+        [Fact]
         public void Test12() {
-            bs.vali("test12", "a", "min[1]", "b", "int|min[1]");
+            bs.vali("test12", "a", "min[2]", "b", "int|min[2]");
             var result = bs.valiResult();
             var isOK = bs.vali("test12").check(out result, "a", "abcd", "b", "3");
             Assert.Equal(isOK, true);
             Assert.Equal(result["a"].value, "abcd");
             Assert.Equal(result["b"].value, 3);
+
+            var isFAIL = bs.vali("test12").check(out result, "a", "ab", "b", "1");
+            Assert.Equal(isFAIL, false);
+            Assert.False(bs.isOK(result["a"].value));
+            Assert.False(bs.isOK(result["b"].value));
         }
         [Fact]
         public void Test13() {
@@ -136,6 +154,11 @@ namespace test
             Assert.Equal(isOK, true);
             Assert.Equal(result["a"].value, "ab");
             Assert.Equal(result["b"].value, 2);
+
+            var isFAIL = bs.vali("test13").check(out result, "a", "abc", "b", "1");
+            Assert.Equal(isFAIL, false);
+            Assert.False(bs.isOK(result["a"].value));
+            Assert.False(bs.isOK(result["b"].value));
         }
         [Fact]
         public void Test14() {
@@ -153,28 +176,30 @@ namespace test
         }
         [Fact]
         public void Test15() {
-            bs.vali("test15", "a", "in[a,b,c,d]");
+            bs.vali("test15", "a", "in[남자,여자]", "b", "notin[남자,여자]");
             var result = bs.valiResult();
-            var isOK = bs.vali("test15").check(out result, "a", "c");
+            var isOK = bs.vali("test15").check(out result, "a", "남자", "b", "남성");
             Assert.Equal(isOK, true);
-            Assert.Equal(result["a"].value, "c");
-        }*/
-        [Fact]
-        public void Test11() {
-            //bs.Msg.add("a", new bs.Msg());
-            bs.vali("test11", "a", "max[5]", "b", "int|max[5]");
-            //bs.vali("test11").setMsg("a");
-            //Assert.Equal(bs.vali("test11").ruleSets["b"].rules.Count, 3);
-            //Assert.Equal(bs.vali("test11").ruleSets["b"].rules[0].rule, "int");
-            //Assert.Equal(bs.vali("test11").ruleSets["b"].rules[1], bs.RuleSet.AND);
-            //Assert.Equal(bs.vali("test11").ruleSets["b"].rules[2].rule, "max");
-            //Assert.Equal(bs.vali("test11").ruleSets["b"].rules[2].arg[0], "5");
+            Assert.Equal(result["a"].value, "남자");
+            Assert.Equal(result["b"].value, "남성");
 
+            var isFAIL = bs.vali("test15").check(out result, "a", "남성", "b", "남자");
+            Assert.Equal(isFAIL, false);
+            Assert.False(bs.isOK(result["a"].value));
+            Assert.False(bs.isOK(result["b"].value));
+        }
+        */
+
+
+        [Fact]
+        public void Test16() {
+            //bs.vali("test16", "a", "alphanum|or|num", "b", "num|or|alphanum", "c", "length[2]|or|num|alphanum");
+            bs.vali("test16", "a", "num|or|alphanum");
             var result = bs.valiResult();
-            var isOK = bs.vali("test11").check(out result, "a", "abcd", "b", "3");
+            var isOK = bs.vali("test16").check(out result, "a", "a1234");
+            //var isOK = bs.vali("test16").check(out result, "a", "a1234", "b", "a1234", "c", "123");
             Assert.Equal(isOK, true);
-            Assert.Equal(result["a"].value, "abcd");
-            Assert.Equal(result["b"].value, 3);
+            //Assert.Equal(result["a"].value, "a1234");
         }
     }
 }
