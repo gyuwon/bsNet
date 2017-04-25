@@ -17,7 +17,7 @@ namespace test
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
             var bs = new bs(null, null);
             bs.service(builder.Build(), null);
@@ -188,7 +188,7 @@ namespace test
             Assert.False(bs.isOK(result["a"].value));
             Assert.False(bs.isOK(result["b"].value));
         }
-        */
+      
 
 
         [Fact]
@@ -200,6 +200,26 @@ namespace test
             //var isOK = bs.vali("test16").check(out result, "a", "a1234", "b", "a1234", "c", "123");
             Assert.Equal(isOK, true);
             //Assert.Equal(result["a"].value, "a1234");
+        }
+        [Fact]
+        public void Test17()
+        {
+            //bs.vali("test16", "a", "alphanum|or|num", "b", "num|or|alphanum", "c", "length[2]|or|num|alphanum");
+            bs.vali("test17", "a", "num|or|alphanum");
+            var result = bs.valiResult();
+            var isOK = bs.vali("test17").check(out result, "a", "1234");
+            //var isOK = bs.vali("test16").check(out result, "a", "a1234", "b", "a1234", "c", "123");
+            Assert.Equal(isOK, true);
+            //Assert.Equal(result["a"].value, "a1234");
+        }
+          */
+        [Fact]
+        public void Test18()
+        {
+            bs.vali("test18", "a", "num|or|alphanum");
+            var result = bs.valiResult();
+            var isOK = bs.vali("test18").check(out result, "a", "ÇÑ±Û");
+            Assert.Equal(isOK, false);
         }
     }
 }

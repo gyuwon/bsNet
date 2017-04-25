@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Microsoft.Extensions.Primitives;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
@@ -17,12 +18,20 @@ namespace com.bsidesoft.cs {
 
             public void OnActionExecuting(ActionExecutingContext c) {
                 //head일반처리
-                if(!invoke(c)) {
+                StringValues tdo;
+                if (!c.HttpContext.Request.Headers.TryGetValue("tdo", out tdo))
+                {
+                    //헤더읽는데 실패
+                }
+                
+                if (!invoke(c)) {
                     invokeJson(c);
                 }
             }
             public void OnActionExecuted(ActionExecutedContext c) {
                 //head일반처리
+                c.HttpContext.Response.Headers.Add("tezt", "dddd");
+
             }
             private bool invokeJson(ActionExecutingContext c) {
                 var json = file<JObject>(false, "Controllers", c.RouteData.Values["controller"] + "", c.RouteData.Values["action"] + ".json");

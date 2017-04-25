@@ -1,6 +1,7 @@
 ﻿using com.bsidesoft.cs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json.Linq;
 
 namespace WebApplication2.Controllers {
     public class HomeController:Controller {
@@ -9,6 +10,8 @@ namespace WebApplication2.Controllers {
             bs = b;
         }
         public string _Index(ActionExecutingContext c) {
+            
+            var a = JObject.Parse("{}");
             return "test";
         }
         public IActionResult Index() {

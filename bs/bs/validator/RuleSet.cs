@@ -18,29 +18,24 @@ namespace com.bsidesoft.cs {
             }
             internal ValiResult check(object value, Dictionary<string, object> safe) {
                 object isOk = OK;
-                var isLogic = false;
-                var logic = AND;
+
                 var r = new ValiResult() { msg = "", result = OK };
                 for(var i = 0; i < rules.Count;) {
                     var item = rules[i++];
-                    if(isLogic) {
-                        isLogic = false;
-                        logic = item;
-                        continue;
-                    }
-                    isLogic = true;
                     var temp = Rule.get(item.rule).isValid(value, item.arg, safe);
-                    if(logic == AND) {
-                        if(temp == FAIL) {
+                    Item logic = AND;
+                    if (i < rules.Count) logic = rules[i++];
+                    if (temp == FAIL) {
+                        if (logic != OR) {
                             var m = item.msg;
-                            if(m == "") m = baseMsg;
+                            if (m == "") m = baseMsg;
                             var message = msg("a");
-                            if(message == null) r.msg = "error : " + value;
+                            if (message == null) r.msg = "error : " + value;
                             else r.msg = message.msg(value, item.rule, item.arg, safe);
                             r.result = FAIL;
                             break;
-                        } else value = temp;
-                    } else if(temp != FAIL) value = temp;
+                        }
+                    } else value = temp;
                 }
                 r.value = value;
                 return r;
