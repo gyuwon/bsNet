@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 namespace com.bsidesoft.cs {
@@ -33,8 +34,8 @@ namespace com.bsidesoft.cs {
             }
             return v;
         }
-        public bs(ILogger<bs> l) {
-            if(logger == null) logger = l;
+        public bs(ILogger<bs> logger, IHostingEnvironment env) {
+            config(logger, env);
         }
     }
 }

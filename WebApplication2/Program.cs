@@ -19,7 +19,6 @@ namespace WebApplication2
                 .UseStartup<Startup>()
                 .UseApplicationInsights()
                 .Build();
-
             host.Run();
         }
     }
