@@ -34,7 +34,7 @@ namespace com.bsidesoft.cs {
                         if(temp == FAIL) {
                             var m = item.msg;
                             if(m == "") m = baseMsg;
-                            var message = Msg.get("a");
+                            var message = msg("a");
                             if(message == null) r.msg = "error : " + value;
                             else r.msg = message.msg(value, item.rule, item.arg, safe);
                             r.result = FAIL;

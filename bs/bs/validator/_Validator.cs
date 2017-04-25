@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
@@ -29,6 +30,25 @@ namespace com.bsidesoft.cs {
                 }
             }
             if(opt != null) foreach(var k in opt) v.add(k.Key, new RuleSet(k.Value));
+            return v;
+        }
+        public static Msg msg(string key) {
+            Msg m;
+            if(!Msg.MSGS.TryGetValue(key, out m)) {
+                log("msg:fail to get - " + key);
+                return null;
+            }
+            return m;
+        }
+        public static Msg msg(string key, Func<object, string, string[], Dictionary<string, object>, string> f) {
+            Msg v = msg(key);
+            if(v == null) {
+                v = new Msg(f);
+                if(!Msg.MSGS.TryAdd(key, v)) {
+                    log("msg:fail to add - " + key);
+                    return null;
+                }
+            }
             return v;
         }
     }
