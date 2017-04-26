@@ -3,13 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
-        public static string path(bool isWeb = false) {
-            return isWeb ? environment.WebRootPath : environment.ContentRootPath;
-        }
-
         private static bool bsInited = false;
         public static void service(IConfigurationRoot configuration, IServiceCollection services) {
             if (bsInited) return;

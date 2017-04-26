@@ -8,7 +8,17 @@ using Microsoft.Extensions.Primitives;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
+        public class FilterAuth:Attribute, IFilterFactory, IAuthorizationFilter {
+            public bool IsReusable => throw new NotImplementedException();
 
+            public IFilterMetadata CreateInstance(IServiceProvider serviceProvider) {
+                throw new NotImplementedException();
+            }
+
+            public void OnAuthorization(AuthorizationFilterContext context) {
+                throw new NotImplementedException();
+            }
+        }
         public class FilterAction:Attribute, IFilterFactory, IActionFilter {
             public bool IsReusable => true;
             public IFilterMetadata CreateInstance(IServiceProvider serviceProvider) {
@@ -34,7 +44,7 @@ namespace com.bsidesoft.cs {
 
             }
             private bool invokeJson(ActionExecutingContext c) {
-                var json = file<JObject>(false, "Controllers", c.RouteData.Values["controller"] + "", c.RouteData.Values["action"] + ".json");
+                var json = fr<JObject>(false, "Controllers", c.RouteData.Values["controller"] + "", c.RouteData.Values["action"] + ".json");
                 if(json == null) return false;
                 ((Controller)c.Controller).ViewBag.bsBefore = json;
                 return true;
