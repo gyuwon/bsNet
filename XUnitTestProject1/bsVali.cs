@@ -17,7 +17,8 @@ namespace test
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
+                //.AddJsonFile("D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
             var bs = new bs(null, null);
             bs.service(builder.Build(), null);
@@ -188,38 +189,20 @@ namespace test
             Assert.False(bs.isOK(result["a"].value));
             Assert.False(bs.isOK(result["b"].value));
         }
-      
-
-
+        */
         [Fact]
         public void Test16() {
-            //bs.vali("test16", "a", "alphanum|or|num", "b", "num|or|alphanum", "c", "length[2]|or|num|alphanum");
-            bs.vali("test16", "a", "num|or|alphanum");
             var result = bs.valiResult();
-            var isOK = bs.vali("test16").check(out result, "a", "a1234");
-            //var isOK = bs.vali("test16").check(out result, "a", "a1234", "b", "a1234", "c", "123");
+            bs.vali("test16", "a", "alphanum|or|num", "b", "num|or|alphanum", "c", "alphanum|length[2]|or|num", "d", "alphanum|length[2]|or|num");
+            var isOK = bs.vali("test16").check(out result, "a", "a1234", "b", "a1234", "c", "a2", "d", "123");
             Assert.Equal(isOK, true);
-            //Assert.Equal(result["a"].value, "a1234");
-        }
-        [Fact]
-        public void Test17()
-        {
-            //bs.vali("test16", "a", "alphanum|or|num", "b", "num|or|alphanum", "c", "length[2]|or|num|alphanum");
-            bs.vali("test17", "a", "num|or|alphanum");
-            var result = bs.valiResult();
-            var isOK = bs.vali("test17").check(out result, "a", "1234");
-            //var isOK = bs.vali("test16").check(out result, "a", "a1234", "b", "a1234", "c", "123");
-            Assert.Equal(isOK, true);
-            //Assert.Equal(result["a"].value, "a1234");
-        }
-          */
-        [Fact]
-        public void Test18()
-        {
-            bs.vali("test18", "a", "num|or|alphanum");
-            var result = bs.valiResult();
-            var isOK = bs.vali("test18").check(out result, "a", "한글");
-            Assert.Equal(isOK, false);
+
+            var isFAIL = bs.vali("test16").check(out result, "a", "숫자영문아님", "b", "숫자영문아님", "c", "숫자영문아님", "d", "숫자영문아님");
+            Assert.Equal(isFAIL, false);
+            Assert.False(bs.isOK(result["a"].value));
+            Assert.False(bs.isOK(result["b"].value));
+            Assert.False(bs.isOK(result["c"].value));
+            Assert.False(bs.isOK(result["d"].value));
         }
     }
 }
