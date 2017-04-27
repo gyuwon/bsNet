@@ -16,6 +16,13 @@
   <ItemGroup>
     <None Remove="Properties\PublishProfiles\CustomProfile.pubxml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\bs.js" />
+    <Content Include="wwwroot\htmlpage.html" />
+    <Content Include="wwwroot\test-extend.js" />
+    <Content Include="wwwroot\test.js" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />

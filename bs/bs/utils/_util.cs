@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
-        public static readonly object OK = new { }, FAIL = new { };
+        public static readonly object OK = new { Name = "OK" }, FAIL = new { Name = "FAIL" };
         public static bool isOK(object v) {
             return v == OK;
         }
@@ -21,5 +22,9 @@ namespace com.bsidesoft.cs {
             }
             return opt;
         }
+        /*
+        public static Dictionary<string, string> opt(JObject obj) {
+            
+        }*/
     }
 }

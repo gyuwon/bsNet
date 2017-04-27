@@ -5,7 +5,14 @@ using System.Collections.Concurrent;
 namespace com.bsidesoft.cs {
     public partial class bs{
         private static ConcurrentDictionary<string, object> _S = new ConcurrentDictionary<string, object>();
-        public static object S(params object[] kv) {
+        public T S<T>(params object[] kv) {
+            var r = SS(kv);
+            return r == null ? default(T) : (T)r;
+        }
+        public object S(params object[] kv) {
+            return SS(kv);
+        }
+        private static object SS(object[] kv) {
             object v = null, n;
             for(var i = 0; i < kv.Length;) {
                 string k = (string)kv[i++];
@@ -20,7 +27,14 @@ namespace com.bsidesoft.cs {
             return v;
         }
         private ConcurrentDictionary<string, object> _s = new ConcurrentDictionary<string, object>();
+        public T s<T>(params object[] kv) {
+            var r = ss(kv);
+            return r == null ? default(T) : (T)r;
+        }
         public object s(params object[] kv) {
+            return ss(kv);
+        }
+        private object ss(object[] kv) {
             object v = null, n;
             for(var i = 0; i < kv.Length;) {
                 string k = (string)kv[i++];

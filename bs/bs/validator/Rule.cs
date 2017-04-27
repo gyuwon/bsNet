@@ -73,6 +73,10 @@ namespace com.bsidesoft.cs {
                 add("notin", new Rule((value, arg, safe) => {
                     return Array.IndexOf(arg, value) == -1 ? value : FAIL;
                 }));
+                add("string", new Rule((value, arg, safe) => {
+                    if (value is string) return value;
+                    return FAIL;
+                }));
             }
             private static ConcurrentDictionary<string, Rule> RULES = new ConcurrentDictionary<string, Rule>();
             public static Rule get(string key) {

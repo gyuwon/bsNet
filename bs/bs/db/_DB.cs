@@ -58,6 +58,29 @@ namespace com.bsidesoft.cs {
             dbEnd(cmd);
             return result;
         }
+        
+        /*
+        public static List<T> dbSelect<T>(out Dictionary<string, ValiResult> err, string query, Dictionary<string, string> opt = null) {
+            Query q;
+            SqlCommand cmd = dbBegin(query, out q);
+            if (cmd == null) {
+                err = null;
+                log("dbSelect:fail to dbBegin - " + query);
+                return null;
+            }
+            err = q.prepare(query, cmd, opt);
+            if (err != null) return null;
+            SqlDataReader rs = cmd.ExecuteReader();
+            int j = rs.FieldCount;
+            List<T> result = new List<T>();
+            while (rs.Read()) {
+                Object[] record = new Object[j];
+                rs.GetValues(record);
+                result.Add(record);
+            }
+            dbEnd(cmd);
+            return result;
+        }*/
         private static ConcurrentDictionary<string, SqlConnection> conns = new ConcurrentDictionary<string, SqlConnection>();
         private static ConcurrentDictionary<string, Query> queries = new ConcurrentDictionary<string, Query>();
         private static void dbInit(IConfigurationRoot configuration) {
