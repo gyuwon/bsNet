@@ -14,9 +14,9 @@ namespace com.bsidesoft.cs {
                 ruleSets.Add(key, new RuleSet(r));
             }
             public bool check(out Dictionary<string, ValiResult> result, params string[] kv) {
-                return check(out result, opt(kv));
+                return check(out result, (dynamic)opt(kv));
             }
-            public bool check(out Dictionary<string, ValiResult> result, Dictionary<string, string> opt) {
+            public bool check(out Dictionary<string, ValiResult> result, Dictionary<string, object> opt) {
                 bool r = true;
                 ValiResult vr = null;
                 var safe = new Dictionary<string, object>();

@@ -3,10 +3,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
@@ -37,63 +35,63 @@ namespace com.bsidesoft.cs {
         public static T dbSelect<T>(out Dictionary<string, ValiResult> err, string query, params string[] kv) {
             return dbSelect<T>(out err, query, opt(kv));
         }
-        public static T dbSelect<T>(out Dictionary<string, ValiResult> err, string query, Dictionary<string, string> opt = null) {
+        public static T dbSelect<T>(out Dictionary<string, ValiResult> err, string query, Dictionary<string, object> opt = null) {
             Query q;
             SqlCommand cmd = dbBegin(query, out q);
-            if (cmd == null) {
+            if(cmd == null) {
                 err = null;
                 log("dbSelect:fail to dbBegin - " + query);
                 return default(T);
             }
             err = q.prepare(query, cmd, opt);
-            if (err != null) return default(T);
+            if(err != null) return default(T);
             SqlDataReader rs = cmd.ExecuteReader();
             int j = rs.FieldCount;
             T result = default(T);
-            switch (TYPES[typeof(T)]) {
-                case "int":
-                    if (j == 1 && rs.Read()) result = (dynamic)rs.GetInt32(0);
-                    break;
-                case "bool":
-                    if (j == 1 && rs.Read()) result = (dynamic)rs.GetBoolean(0);
-                    break;
-                case "string":
-                    if (j == 1 && rs.Read()) result = (dynamic)rs.GetString(0);
-                    break;
-                case "float":
-                    if (j == 1 && rs.Read()) result = (dynamic)rs.GetFloat(0);
-                    break;
-                case "double":
-                    if (j == 1 && rs.Read()) result = (dynamic)rs.GetDouble(0);
-                    break;
-                case "list<string>":
-                    result = (dynamic)new List<String>();
-                    while (rs.Read()) ((dynamic)result).Add(rs.GetString(0));
-                    break;
-                case "list<int>":
-                    result = (dynamic)new List<int>();
-                    while (rs.Read()) ((dynamic)result).Add(rs.GetInt32(0));
-                    break;
-                case "list<object[]>":
-                    result = (dynamic)new List<Object[]>();
-                    while (rs.Read()) {
-                        Object[] record = new Object[j];
-                        rs.GetValues(record);
-                        ((dynamic)result).Add(record);
+            switch(TYPES[typeof(T)]) {
+            case "int":
+                if(j == 1 && rs.Read()) result = (dynamic)rs.GetInt32(0);
+                break;
+            case "bool":
+                if(j == 1 && rs.Read()) result = (dynamic)rs.GetBoolean(0);
+                break;
+            case "string":
+                if(j == 1 && rs.Read()) result = (dynamic)rs.GetString(0);
+                break;
+            case "float":
+                if(j == 1 && rs.Read()) result = (dynamic)rs.GetFloat(0);
+                break;
+            case "double":
+                if(j == 1 && rs.Read()) result = (dynamic)rs.GetDouble(0);
+                break;
+            case "list<string>":
+                result = (dynamic)new List<String>();
+                while(rs.Read()) ((dynamic)result).Add(rs.GetString(0));
+                break;
+            case "list<int>":
+                result = (dynamic)new List<int>();
+                while(rs.Read()) ((dynamic)result).Add(rs.GetInt32(0));
+                break;
+            case "list<object[]>":
+                result = (dynamic)new List<Object[]>();
+                while(rs.Read()) {
+                    Object[] record = new Object[j];
+                    rs.GetValues(record);
+                    ((dynamic)result).Add(record);
+                }
+                break;
+            case "list<dictionary<string,string>>":
+                result = (dynamic)new List<Dictionary<String, String>>();
+                while(rs.Read()) {
+                    Dictionary<String, String> record1 = new Dictionary<String, String>();
+                    Object[] record2 = new Object[j];
+                    rs.GetValues(record2);
+                    for(var i = 0; i < record2.Length; i++) {
+                        record1.Add(rs.GetName(i), record2.GetValue(i) + "");
                     }
-                    break;
-                case "list<dictionary<string,string>>":
-                    result = (dynamic)new List<Dictionary<String, String>>();
-                    while (rs.Read()) {
-                        Dictionary<String, String> record1 = new Dictionary<String, String>();
-                        Object[] record2 = new Object[j];
-                        rs.GetValues(record2);
-                        for(var i = 0; i < record2.Length; i++) {
-                            record1.Add(rs.GetName(i), record2.GetValue(i) + "");
-                        }
-                        ((dynamic)result).Add(record1);
-                    }
-                    break;
+                    ((dynamic)result).Add(record1);
+                }
+                break;
             }
             dbEnd(cmd);
             return result;

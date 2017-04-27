@@ -102,12 +102,12 @@ namespace com.bsidesoft.cs {
                     return "@" + v + "@";
                 }
             }
-            internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd, Dictionary<string, string> opt) {
+            internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd, Dictionary<string, object> opt) {
                 var result = valiResult();
                 vali.setMsg(q);
                 if(!vali.check(out result, opt)) return result;
                 var query = sql;
-                foreach(var k in replacer) query = new Regex("@" + k + "@").Replace(query, opt[k]);
+                foreach(var k in replacer) query = new Regex("@" + k + "@").Replace(query, opt[k] + "");
                 cmd.CommandText = query;
                 foreach(var k in param) {
                     var p = new SqlParameter("@" + k.key, k.type);
