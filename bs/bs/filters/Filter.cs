@@ -33,7 +33,6 @@ namespace com.bsidesoft.cs {
                 {
                     //헤더읽는데 실패
                 }
-                
                 if (!invoke(c)) {
                     invokeJson(c);
                 }

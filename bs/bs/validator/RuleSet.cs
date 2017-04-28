@@ -21,38 +21,41 @@ namespace com.bsidesoft.cs {
             internal ValiResult check(object value, Dictionary<string, object> safe) {
                 var r = new ValiResult() { msg = "", result = OK };
                 if(value == FAIL) {
-                    if (!optional) {
+                    if(!optional) {
                         r.result = FAIL;
                         r.msg = "Cannot found key";
-                        r.value = null;
                     }
-                } else for (var i = 0; i < rules.Count;) {
-                    var item = rules[i++];
-                    var rule = Rule.get(item.rule);
-                    if(rule == null) {
-                        r.msg = "Cannot found rule. key name is '" + item.rule + "'";
-                        r.result = FAIL;
-                        break;
-                    }
-                    var temp = rule.isValid(value, item.arg, safe);
-                    Item logic = AND;
-                    if (i < rules.Count) logic = rules[i++];
-                    if(temp == FAIL) {
-                        if(logic == AND) {
-                            var m = item.msg;
-                            if(m == "") m = baseMsg;
-                            var message = msg(m);
-                            if(message == null) r.msg = "error : " + value;
-                            else r.msg = message.msg(value, item.rule, item.arg, safe);
+                    r.value = null;
+                } else {
+                    for(var i = 0; i < rules.Count;) {
+                        var item = rules[i++];
+                        var rule = Rule.get(item.rule);
+                        if(rule == null) {
+                            r.msg = "Cannot found rule. key name is '" + item.rule + "'";
                             r.result = FAIL;
                             break;
                         }
-                    } else {
-                        value = temp;
-                        if(logic == OR) break;
+                        var temp = rule.isValid(value, item.arg, safe);
+                        Item logic = AND;
+                        if(i < rules.Count) logic = rules[i++];
+                        if(temp == FAIL) {
+                            if(logic == AND) {
+                                var m = item.msg;
+                                if(m == "") m = baseMsg;
+                                var message = msg(m);
+                                if(message == null) r.msg = "error : " + value;
+                                else r.msg = message.msg(value, item.rule, item.arg, safe);
+                                r.result = FAIL;
+                                break;
+                            }
+                        } else {
+                            value = temp;
+                            if(logic == OR) break;
+                        }
+
                     }
+                    r.value = value;
                 }
-                r.value = value;
                 return r;
             }
             private void parse(string rule) {
