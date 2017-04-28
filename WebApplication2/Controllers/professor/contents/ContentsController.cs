@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace WebApplication2.Controllers {
     public class ContentsController:Controller {

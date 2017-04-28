@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
-using System;
 using System.IO;
 using System.Text;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
-        public static String reqPath(HttpRequest r) {
+        public static string reqPath(HttpRequest r) {
             return r.Path;
         }
         public static JObject reqJson(HttpRequest r) {
