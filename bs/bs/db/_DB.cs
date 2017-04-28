@@ -33,7 +33,7 @@ namespace com.bsidesoft.cs {
             return row;
         }
         public static T dbSelect<T>(out Dictionary<string, ValiResult> err, string query, params string[] kv) {
-            return dbSelect<T>(out err, query, opt(kv));
+            return dbSelect<T>(out err, query, opt<object>(kv));
         }
         public static T dbSelect<T>(out Dictionary<string, ValiResult> err, string query, Dictionary<string, object> opt = null) {
             Query q;
@@ -103,7 +103,69 @@ namespace com.bsidesoft.cs {
             foreach(var k in configuration.GetSection("ConnectionStrings").GetChildren()) dbConn(k.Key, k.Value);
             var query = configuration.GetSection("query");
             foreach(var db in query.GetChildren()) {
-                foreach(var q in query.GetSection(db.Key).GetChildren()) dbQuery(db.Key, q.Key, q.Value);
+                //경로(@)를 입력한 경우 해당 디렉토리에 있는 sql문을 전부 찾아 셋팅
+                if(db.Value is string && db.Value.Length > 1 && db.Value[0] == '@') {
+                    var basePath = db.Value.Substring(1); //입력 경로 
+                    var dir = pathNormalize(false, basePath.Split('/')); //전체 Dir
+                    var baseDir = dir; //기본 Dir
+                    var sqls = new Dictionary<String, String>(); //SQL문을 저장 
+                    List<string> stack = new List<String>(); //하위 디렉토리내에 sql을 처리하기 위함임 
+                    while(true) {
+                        //하위 디렉토리가 있으면 stack에다 넣고 예약처리 
+                        string[] dirList = Directory.GetDirectories(dir);
+                        if(dirList.Length > 0) foreach(var d in dirList) stack.Add(d);
+
+                        //디렉토리내에 파일 경로를 찾는다. 
+                        string[] filesPaths = Directory.GetFiles(dir);
+                        foreach(var filePath in filesPaths) {
+                            //파일 확장자가 .sql이어야 함 
+                            var fileName = Path.GetFileName(filePath);
+                            if(fileName.Length < 5 || fileName.Substring(fileName.Length - 4, 4) != ".sql") {
+                                continue;
+                            }
+                            //기본 Dir에 대한 추가 경로 추출 
+                            var appendPath = dir.Replace(baseDir, "").Replace('\\', '/');
+                            if(appendPath.Length > 0 && appendPath[0] == '/') appendPath = appendPath.Substring(1);
+                            //기본 쿼리키 만들기(경로 및 sql 파일기반임)
+                            var baseKey = fileName == "base.sql" ? "" : fileName.Substring(0, fileName.Length - 4);
+                            if(baseKey.Length == 0) {
+                                baseKey = appendPath.Length > 0 ? appendPath + "/" : "";
+                            } else {
+                                baseKey = appendPath.Length > 0 ? appendPath + "/" + baseKey + "/" : baseKey + "/";
+                            }
+                            //sql 파일 읽어옴 
+                            var f = basePath + "/" + (appendPath.Length == 0 ? "" : appendPath + "/") + fileName;
+                            var text = fr<string>(false, f.Split('/'));
+                            //한 줄씩 읽어서 퀴리 문을 sqls에 저장 
+                            var lines = text.Split('\n');
+                            var k = "";
+                            var q = "";
+                            foreach(var line in lines) {
+                                //쿼리 시작점 확인 
+                                if(line.Length > 1 && line[0] == '#') { 
+                                    q = q.Trim();
+                                    if(k != "" && q != "") sqls.Add(baseKey + k, q); //퀴리 추가 
+                                    k = line.Substring(1);
+                                    var i = line.IndexOf(':'); //#add : 설명 
+                                    k = i == -1 ? k.Trim() : k.Substring(0, i - 1).Trim();
+                                    q = "";
+                                    continue;
+                                }
+                                q += line + " "; //쿼리문을 만듬 
+                            }
+                            //나머지 sql문 추가 
+                            q = q.Trim();
+                            if(k != "" && q != "") sqls.Add(baseKey + k, q);
+                        }
+                        if(stack.Count == 0) break;
+                        dir = stack[stack.Count-1];
+                        stack.RemoveAt(stack.Count - 1);
+                    }
+                    //쿼리문을 등록한다.
+                    foreach(var q in sqls) dbQuery(db.Key, q.Key, q.Value);
+                } else {
+                    foreach(var q in query.GetSection(db.Key).GetChildren()) dbQuery(db.Key, q.Key, q.Value);
+                }
             }
         }
         private static void dbConn(string key, string conn) {

@@ -32,9 +32,9 @@ namespace com.bsidesoft.cs {
             return vali;
         }
         public static Vali vali(string key, params string[] kv) {
-            return vali(key, opt(kv));
+            return vali(key, opt<string>(kv));
         }
-        public static Vali vali(string key, Dictionary<string, object> opt) {
+        public static Vali vali(string key, Dictionary<string, string> opt) {
             Vali v = vali(key);
             if(v == null) {
                 v = new Vali();
@@ -43,7 +43,7 @@ namespace com.bsidesoft.cs {
                     return null;
                 }
             }
-            if(opt != null) foreach(var k in opt) v.add(k.Key, new RuleSet(k.Value + ""));
+            if(opt != null) foreach(var k in opt) v.add(k.Key, new RuleSet(k.Value));
             return v;
         }
         public static Msg msg(string key) {

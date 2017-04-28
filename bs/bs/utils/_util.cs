@@ -11,18 +11,19 @@ namespace com.bsidesoft.cs {
         public static bool isFAIL(object v) {
             return v == FAIL;
         }
-        public static Dictionary<string, object> opt(string[] kv) {
-            Dictionary<string, object> opt = null;
+        public static Dictionary<string, T> opt<T>(string[] kv) {
+            Dictionary<string, T> opt = null;
             if(kv.Length > 0) {
                 if(kv.Length % 2 != 0) {
                     log("opt:invalid params(length needs even:...k,v)" + kv.Length);
                     return opt;
                 }
-                opt = new Dictionary<string, object>();
-                for(var i = 0; i < kv.Length;) opt.Add(kv[i++], kv[i++]);
+                opt = new Dictionary<string, T>();
+                for(var i = 0; i < kv.Length;) opt.Add(kv[i++], (dynamic)kv[i++]);
             }
             return opt;
-        }
+        }   
+
         public static Dictionary<string, object> json2kv(JObject j, params String[] keys) {
             var result = new Dictionary<string, object>();
             foreach (var k in keys) {
