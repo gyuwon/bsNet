@@ -27,7 +27,7 @@ namespace WebApplication2.Controllers {
                 //bs.vali(k).setMsg(k);
             }
             var result = bs.valiResult();
-            if (!bs.vali(k).check(out result, "contree_rowid", j.GetValue("contree_rowid") + "", "key1", j.GetValue("key1") + "", "key2", j.GetValue("key2") + "")) {
+            if (!bs.vali(k).check(out result, "contree_rowid", j.GetValue("contree_rowid") + "", "key1", j.GetValue("key1") + "")) {
                 bs.s("valiError", result);
                 return null;
             } else {
