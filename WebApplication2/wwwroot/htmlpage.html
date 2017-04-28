@@ -24,6 +24,9 @@
 <body>
     <script src="http://www.bsidesoft.com/api/js/5/build/test.php"></script>
     <script>
+        bs.get(function (v) {
+            alert(v);
+        }, "professor/contents/contents");
         bs.post(function (v) {
             alert(v);
         }, "professor/contents/contents/list", "json", { r: "12" });
