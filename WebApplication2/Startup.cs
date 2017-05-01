@@ -34,6 +34,11 @@ namespace WebApplication2 {
                     name: "a",
                     template: "professor/contents/{controller=Contents}/{action=Index}"
                 );
+                routes.MapRoute(
+                    name: "b",
+                    template: "{action=Index}",
+                    defaults: new { controller = "Home" }
+                );
             });
         }
     }

@@ -12,12 +12,26 @@ namespace com.bsidesoft.cs {
             r = pathNormal.Replace(r, pathSep);
             return r;
         }
-        public static string path(bool isWeb = false) {
+        private static string path(bool isWeb = false) {
             if(environment == null) {
                 return Directory.GetCurrentDirectory() + pathSep + (isWeb ? "wwwroot" : "");
             } else {
                 return isWeb ? environment.WebRootPath : environment.ContentRootPath;
             }
+        }
+        public static string path(bool isWeb, params string[] p) {
+            return pathNormalize(isWeb, p);
+        }
+        public static FileInfo fi(bool isWeb, params string[] p) {
+            return new FileInfo(pathNormalize(isWeb, p));
+        }
+        public static bool fd(bool isWeb, params string[] p) {
+            return fd(new FileInfo(pathNormalize(isWeb, p)));
+        }
+        public static bool fd(FileInfo i) {
+            if(!i.Exists) return false;
+            i.Delete();
+            return true;
         }
         public static T fr<T>(bool isWeb, params string[] p) {
             var path = pathNormalize(isWeb, p);
