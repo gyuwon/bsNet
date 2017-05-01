@@ -22,11 +22,41 @@
     </style>
 </head>
 <body>
+    <button data-click="host.tree_list">트리 리스트</button>
+    <br />
+    <input id="contents_r" type="text" />
+    <button data-click="host.contents_list">컨텐츠 리스트</button>
+
     <script src="http://www.bsidesoft.com/api/js/5/build/test.php"></script>
     <script>
-        bs.post(function (v) {
-            alert(v);
-        }, "professor/contents/contents/list", "json", { r: "12" });
+        (function () {
+            var T, VM;
+            bs(
+                'host', T = {
+                    init: function () {
+                        bs.render();
+                    },
+                    tree_list: function () {
+                        bs.post(function (v) {
+                            alert(v);
+                            v = JSON.parse(v);
+                            console.log(v);
+                        }, 'professor/contents/tree/list', 'json', {});
+                    },
+                    contents_list: function () {
+                        bs.post(function (v) {
+                            alert(v);
+                            v = JSON.parse(v);
+                            console.log(v);
+                        }, 'professor/contents/contents/list', 'json', {
+                            r: bs.getId('contents_r').S('@value') });
+                    }
+                }
+            );
+        }
+        )();
+        bs('host.init')();
+        bs.on('click');
     </script>
 </body>
 </html>
