@@ -19,6 +19,10 @@
 
   <ItemGroup>
     <Content Include="wwwroot\test.html" />
+    <Content Include="wwwroot\__test\htmlpage.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\__test\professor.html" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
