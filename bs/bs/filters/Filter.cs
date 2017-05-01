@@ -8,17 +8,6 @@ using Microsoft.Extensions.Primitives;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
-        public class FilterAuth:Attribute, IFilterFactory, IAuthorizationFilter {
-            public bool IsReusable => throw new NotImplementedException();
-
-            public IFilterMetadata CreateInstance(IServiceProvider serviceProvider) {
-                throw new NotImplementedException();
-            }
-
-            public void OnAuthorization(AuthorizationFilterContext context) {
-                throw new NotImplementedException();
-            }
-        }
         public class FilterAction:Attribute, IFilterFactory, IActionFilter {
             public bool IsReusable => true;
             public IFilterMetadata CreateInstance(IServiceProvider serviceProvider) {
@@ -27,15 +16,16 @@ namespace com.bsidesoft.cs {
             private static ConcurrentDictionary<string, MethodInfo> methods = new ConcurrentDictionary<string, MethodInfo>();
 
             public void OnActionExecuting(ActionExecutingContext c) {
-                //head일반처리
-                StringValues tdo;
-                if (!c.HttpContext.Request.Headers.TryGetValue("tdo", out tdo))
-                {
-                    //헤더읽는데 실패
-                }
-                if (!invoke(c)) {
+                //var v = invoke(c) ?? invokeJson(c);
+                if(invoke(c)) {
                     invokeJson(c);
                 }
+
+                
+                //인증요청이 있다면 인증처리
+                //밸리요청이 있다면 리퀘밸리처리
+                //디비에 넘길값이 있다면 값처리
+                //c.HttpContext.Response.Redirect();
             }
             public void OnActionExecuted(ActionExecutedContext c) {
                 //head일반처리
