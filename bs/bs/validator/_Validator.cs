@@ -7,6 +7,20 @@ namespace com.bsidesoft.cs {
             public object result { get; internal set; }
             public string msg { get; internal set; }
             public object value { get; internal set; }
+            public Dictionary<string, Object> toDic() {
+                return new Dictionary<string, Object>() {
+                    {"result", result == OK ? true : false},
+                    {"msg", msg},
+                    {"value", value}
+                };
+            }
+        }
+        public static Dictionary<string, Dictionary<string, Object>> toDicValiResult(Dictionary<string, ValiResult> valiResult) {
+            var result = new Dictionary<string, Dictionary<string, Object>>();
+            foreach (var vali in valiResult) {
+                result.Add(vali.Key, vali.Value.toDic());
+            }
+            return result;
         }
         public static Dictionary<string, ValiResult> valiResult() { return null; }
         public static Vali vali(string key) {
@@ -18,7 +32,7 @@ namespace com.bsidesoft.cs {
             return vali;
         }
         public static Vali vali(string key, params string[] kv) {
-            return vali(key, opt(kv));
+            return vali(key, opt<string>(kv));
         }
         public static Vali vali(string key, Dictionary<string, string> opt) {
             Vali v = vali(key);

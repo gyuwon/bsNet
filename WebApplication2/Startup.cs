@@ -31,9 +31,9 @@ namespace WebApplication2 {
             app.UseStaticFiles();
             app.UseMvc(routes => {
                 routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}" +
-                    "");
+                    name: "a",
+                    template: "professor/contents/{controller=Contents}/{action=Index}"
+                );
             });
         }
     }

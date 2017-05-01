@@ -11,27 +11,24 @@ namespace com.bsidesoft.cs {
                 ruleSets.Add(key, r);
             }
             internal void add(string key, string r) {
-                ruleSets.Add(key, new RuleSet(r));
+                add(key, new RuleSet(r));
             }
             public bool check(out Dictionary<string, ValiResult> result, params string[] kv) {
-                return check(out result, opt(kv));
+                return check(out result, opt<object>(kv));
             }
-            public bool check(out Dictionary<string, ValiResult> result, Dictionary<string, string> opt) {
+            public bool check(out Dictionary<string, ValiResult> result, Dictionary<string, object> opt) {
                 bool r = true;
+                ValiResult vr = null;
                 var safe = new Dictionary<string, object>();
                 result = new Dictionary<string, ValiResult>();
-                foreach(var rule in ruleSets) {
-                    var v = opt[rule.Key];
-                    if(v == null) {
-                        r = false;
-                        log("check:fail to get opt - " + rule.Key);
-                        break;
-                    }
-                    rule.Value.setMsg(msg);
-                    var vr = rule.Value.check(v, safe);
-                    result.Add(rule.Key, vr);
+                foreach(var ruleSet in ruleSets) {
+                    var k = ruleSet.Key;
+                    var v = opt.ContainsKey(k) ? opt[k] : FAIL;
+                    ruleSet.Value.setMsg(msg);
+                    vr = ruleSet.Value.check(v, safe);
+                    result.Add(k, vr);
                     if(vr.result == FAIL) r = false;
-                    else safe.Add(rule.Key, vr.value);
+                    else safe.Add(k, vr.value);
                 }
                 return r;
             }

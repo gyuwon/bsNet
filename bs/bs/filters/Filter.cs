@@ -33,14 +33,13 @@ namespace com.bsidesoft.cs {
                 {
                     //헤더읽는데 실패
                 }
-                
                 if (!invoke(c)) {
                     invokeJson(c);
                 }
             }
             public void OnActionExecuted(ActionExecutedContext c) {
                 //head일반처리
-                c.HttpContext.Response.Headers.Add("tezt", "dddd");
+                //c.HttpContext.Response.Headers.Add("Content-Type", "application/json");
 
             }
             private bool invokeJson(ActionExecutingContext c) {

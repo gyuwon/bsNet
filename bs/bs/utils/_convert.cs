@@ -13,15 +13,15 @@ namespace com.bsidesoft.cs {
             {typeof(string), "string"},{typeof(string[]), "string[]"},
 
             {typeof(StreamReader), "streamreader"}, {typeof(FileStream), "filestream"},
-            {typeof(JObject), "jobject"}
+            {typeof(JObject), "jobject"},
+            {typeof(List<Object[]>), "list<object[]>"},
+            {typeof(List<Dictionary<String, String>>), "list<dictionary<string,string>>"},
+            {typeof(List<String>), "list<string>"},
+            {typeof(List<int>), "list<int>"},
         };
         public static T to<T>(object v) {
+            if (v is String && (String)v == "") v = default(T); 
             return (T)Convert.ChangeType(v, typeof(T));
         }
-        /*
-        public static T Plus<T>(object a, object b) {
-            return (T)((dynamic)to<T>(a) + (dynamic)to<T>(b));
-        }
-        */
     }
 }
