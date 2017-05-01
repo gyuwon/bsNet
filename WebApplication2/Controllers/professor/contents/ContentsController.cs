@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace WebApplication2.Controllers {
     public class ContentsController:Controller {
@@ -60,7 +58,7 @@ namespace WebApplication2.Controllers {
         }
         public IActionResult Index() {
             var err = bs.valiResult();
-            var rs = bs.dbSelect<List<Object[]>>(out err, "remote:a", "title", "1PD시험a");
+            var rs = bs.dbSelect<List<Object[]>>(out err, "test:a", "title", "1PD시험a");
             return Json(new { data = rs, a = bs.before(this) });
         }
     }

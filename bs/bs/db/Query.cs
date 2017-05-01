@@ -35,6 +35,7 @@ namespace com.bsidesoft.cs {
             private string sql;
             private List<string> replacer = new List<string>();
             private List<Item> param = new List<Item>();
+            private HashSet<String> keys = new HashSet<String>(); //중복키 방지용(첫번째 등록된 것 우선처리함)
             private Vali vali = new Vali();
 
             public Query(string target, string query) {
@@ -87,14 +88,15 @@ namespace com.bsidesoft.cs {
                         if(table == null) return "@" + v;
                         var fieldName = rule.Substring(j + 1);
                         var field = table[fieldName];
-                        vali.add(key, field[4] is DBNull ? "" : (string)field[4]);
                         type = fieldType[(string)field[1]];
+                        if(!keys.Contains(key)) vali.add(key, field[4] is DBNull ? "" : (string)field[4]);
                     } else {
                         if(rule.Contains("int")) type = fieldType["int"];
                         else if(rule.Contains("float")) type = fieldType["float"];
                         else type = fieldType["nvarchar"];
-                        vali.add(key, rule);
+                        if(!keys.Contains(key)) vali.add(key, rule);
                     }
+                    if(!keys.Contains(key)) keys.Add(key);
                     param.Add(new Item() { key = key, type = type });
                     return "@" + key;
                 } else {
