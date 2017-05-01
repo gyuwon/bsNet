@@ -1,0 +1,1 @@
+﻿Data Source=210.91.108.120;Initial Catalog=cmpsedu;Integrated Security=False;User ID=cmpsedu;Password=cmpsedu;Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False

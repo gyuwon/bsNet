@@ -11,10 +11,10 @@ namespace com.bsidesoft.cs {
                 ruleSets.Add(key, r);
             }
             internal void add(string key, string r) {
-                ruleSets.Add(key, new RuleSet(r));
+                add(key, new RuleSet(r));
             }
             public bool check(out Dictionary<string, ValiResult> result, params string[] kv) {
-                return check(out result, (dynamic)opt(kv));
+                return check(out result, opt<object>(kv));
             }
             public bool check(out Dictionary<string, ValiResult> result, Dictionary<string, object> opt) {
                 bool r = true;
