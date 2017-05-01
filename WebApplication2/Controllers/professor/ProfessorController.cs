@@ -67,6 +67,55 @@ namespace WebApplication2.Controllers {
             return Json(new {});
         }
 
+        public Dictionary<string, object> _view1(ActionExecutingContext c)
+        {
+            var j = bs.reqJson(c.HttpContext.Request); //{"cmps_r":3}
+            var k = bs.reqPath(c.HttpContext.Request); //professor/view1
+            if (!bs.S<bool>(k))
+            {
+                bs.S(k, true);
+                bs.msg(k + "/cmps_r", (value, rule, arg, safe) => "정수값을 입력하세요.");
+                bs.vali(k, "cmps_r", "int:" + k + "/cmps_r");
+            }
+            var result = bs.valiResult();
+            if (!bs.vali(k).check(out result, bs.json2kv(j, "cmps_r")))
+            {
+                bs.s("valiError", bs.toDicValiResult(result));
+                return null;
+            }
+            else
+            {
+                return new Dictionary<string, object>() {
+                    {"cmps_rowid", result["cmps_r"].value}
+                };
+            }
+        }
+        [HttpPost]
+        public IActionResult view1()
+        {
+            var before = (Dictionary<string, object>)bs.before(this);
+            if (null == before)
+            {
+                //return bs.beforeErr();
+                if (null == bs.s("valiError"))
+                {
+                    return Json(new { error = "알 수 없는 에러 발생" });
+                }
+                else
+                {
+                    return Json(new { error = "유효성 검사 에러 발생", vali = bs.s("valiError") });
+                }
+            }
+            var err = bs.valiResult();
+            var rs1 = bs.dbSelect<List<Dictionary<String, String>>>(out err, "remote:teacher/view_from_cmps_rowid");
+            if (err != null)
+            {
+                return Json(new { error = "컨텐츠 종류 정보를 가져오지 못했습니다." });
+            }
+
+            return Json(new { professor = rs1 });
+        }
+
         /*
         public Dictionary<string, object> _list(ActionExecutingContext c) {
             var j = bs.reqJson(c.HttpContext.Request); //{"r":3}
