@@ -24,10 +24,19 @@ namespace com.bsidesoft.cs {
             var query = new Query(db, sql);
             return queries.TryAdd(key, query);
         }
-        public static int dbExec(string query, params object[] args) { // "conn:querykey"
+        public static int dbExec(out Dictionary<string, ValiResult> err, string query, params string[] kv) {
+            return dbExec(out err, query, opt<object>(kv));
+        }
+        public static int dbExec(out Dictionary<string, ValiResult> err, string query, Dictionary<string, object> opt = null) {
             Query q;
             SqlCommand cmd = dbBegin(query, out q);
-            if(cmd == null) return 0;
+            if(cmd == null) {
+                err = null;
+                log("dbExec:fail to dbBegin - " + query);
+                return 0;
+            }
+            err = q.prepare(query, cmd, opt);
+            if(err != null) return 0;
             int row = cmd.ExecuteNonQuery();
             dbEnd(cmd);
             return row;
