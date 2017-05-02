@@ -29,6 +29,7 @@ namespace com.bsidesoft.cs {
             SqlCommand cmd = dbBegin(query, out q);
             if(cmd == null) return 0;
             int row = cmd.ExecuteNonQuery();
+            //id를 얻는다.
             dbEnd(cmd);
             return row;
         }
@@ -97,7 +98,7 @@ namespace com.bsidesoft.cs {
             return result;
         }
 
-        private static ConcurrentDictionary<string, SqlConnection> conns = new ConcurrentDictionary<string, SqlConnection>();
+        private static Dictionary<string, string> conns = new Dictionary<string, string>();
         private static ConcurrentDictionary<string, Query> queries = new ConcurrentDictionary<string, Query>();
         private static void dbInit(IConfigurationRoot configuration) {
             var dbPath = configuration.GetSection("Databases")["Path"];
@@ -173,26 +174,19 @@ namespace com.bsidesoft.cs {
             }
         }
         private static void dbConn(string key, string conn) {
-            if(conns.ContainsKey(key)) {
-                log("dbConn:set:no exist key - " + key);
-                return;
-            }
-            if(!conns.TryAdd(key, new SqlConnection(conn))) {
-                log("dbConn:set:fail to add key - " + key + ", " + conn);
-                return;
-            }
+            if(!conns.ContainsKey(key)) conns[key] = conn;
         }
         private static SqlConnection dbConn(string key) {
             if(!conns.ContainsKey(key)) {
                 log("dbConn:get:no exist key - " + key);
                 return null;
             }
-            SqlConnection conn;
+            string conn;
             if(!conns.TryGetValue(key, out conn)) {
                 log("dbConn:get:fail to get key - " + key);
                 return null;
             }
-            return conn;
+            return new SqlConnection(conn);
         }
         private static SqlCommand dbBegin(string query, out Query q) {
             string[] strs = query.Split(':');

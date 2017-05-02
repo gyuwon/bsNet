@@ -34,16 +34,16 @@ namespace WebApplication2.Controllers {
             bs.log("upload:" + upfile.Count);
             foreach(var f in upfile) {
                 if(f.Length == 0) continue;
+                //한가득 정책(확장자검사, 용량검사..)
                 var s = ContentDispositionHeaderValue.Parse(f.ContentDisposition).FileName.Trim();
                 s = Guid.NewGuid() + "." + (new Regex("[\"]")).Replace(s, m => "").Split('.')[1];
                 result.Add("/upfile/" + s);
-                bs.log(bs.path(true, "upfile", s));
                 var st = new FileStream(bs.path(true, "upfile", s), FileMode.Create);
                 await f.CopyToAsync(st);
             }
             return Json(result);
         }
-        public PhysicalFileResult excel() {
+        public IActionResult excel() {
             var sFileName = @"demo.xlsx";
             var URL = string.Format("{0}://{1}/{2}", Request.Scheme, Request.Host, sFileName);
             var fi = bs.fi(true, sFileName);
