@@ -35,7 +35,7 @@ namespace com.bsidesoft.cs {
             private string sql;
             private List<string> replacer = new List<string>();
             private List<Item> param = new List<Item>();
-            private HashSet<String> keys = new HashSet<String>(); //중복키 방지용(첫번째 등록된 것 우선처리함)
+            private Dictionary<string, int> keys = new Dictionary<string, int>();
             private Vali vali = new Vali();
 
             public Query(string target, string query) {
@@ -82,23 +82,29 @@ namespace com.bsidesoft.cs {
                     var key = v.Substring(0, i);
                     var type = SqlDbType.NChar;
                     var rule = v.Substring(i + 1);
-                    if(rule.Contains(".")) {
-                        var j = rule.IndexOf('.');
-                        var table = tInfo(rule.Substring(0, j));
-                        if(table == null) return "@" + v;
-                        var fieldName = rule.Substring(j + 1);
-                        var field = table[fieldName];
-                        type = fieldType[(string)field[1]];
-                        if(!keys.Contains(key)) vali.add(key, field[4] is DBNull ? "" : (string)field[4]);
+                    var id = 0;
+                    if(!vali.hasKey(key)) {
+                        if(rule.Contains(".")) {
+                            var j = rule.IndexOf('.');
+                            var table = tInfo(rule.Substring(0, j));
+                            if(table == null) return "@" + v;
+                            var fieldName = rule.Substring(j + 1);
+                            var field = table[fieldName];
+                            type = fieldType[(string)field[1]];
+                            rule = field[4] is DBNull ? "" : (string)field[4];
+                        } else {
+                            if(rule.Contains("int")) type = fieldType["int"];
+                            else if(rule.Contains("float")) type = fieldType["float"];
+                            else type = fieldType["nvarchar"];
+
+                        }
+                        vali.add(key, rule);
+                        keys.Add(key, 0);
                     } else {
-                        if(rule.Contains("int")) type = fieldType["int"];
-                        else if(rule.Contains("float")) type = fieldType["float"];
-                        else type = fieldType["nvarchar"];
-                        if(!keys.Contains(key)) vali.add(key, rule);
+                        id = ++keys[key];
                     }
-                    if(!keys.Contains(key)) keys.Add(key);
                     param.Add(new Item() { key = key, type = type });
-                    return "@" + key;
+                    return "@" + key + "_" + id;
                 } else {
                     replacer.Add(v);
                     return "@" + v + "@";
@@ -115,9 +121,11 @@ namespace com.bsidesoft.cs {
                 foreach(var k in replacer) query = new Regex("@" + k + "@").Replace(query, opt[k] + "");
                 cmd.CommandText = query;
                 foreach(var k in param) {
-                    var p = new SqlParameter("@" + k.key, k.type);
-                    p.Value = result[k.key].value;
-                    cmd.Parameters.Add(p);
+                    for(var i = keys[k.key]; i > -1; i--) {
+                        var p = new SqlParameter("@" + k.key + "_" + i, k.type);
+                        p.Value = result[k.key].value;
+                        cmd.Parameters.Add(p);
+                    }
                 }
                 return null;
             }
