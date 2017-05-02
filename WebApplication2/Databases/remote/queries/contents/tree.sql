@@ -5,9 +5,6 @@ select @parent_rowid:int@,@title:contree.title@,(
 )from(select 'x'x)a 
 where 0=(select count(*)from contree where parent_rowid=@parent_rowid:int@ and title=@title:contree.title@)
 
-#view
-select parent_rowid from contree where contree_rowid=@contree_rowid:int@
-
 #list : 컨텐츠 리스트
 select contree_rowid,parent_rowid,title,ord,regdate from contree where contree_rowid!=1 order by parent_rowid,ord
 
@@ -30,3 +27,12 @@ delete from contree where contree_rowid=@contree_rowid:int@ and 1=(
 	from contree t0
 	where contree_rowid=@contree_rowid:int@ 
 )
+
+-- Hyej 추가
+#view : 트리의 부모를 가져온다.
+select parent_rowid from contree where contree_rowid=@contree_rowid:int@
+
+#list2 : 트리의 부모에 포함된 트리 리스트
+select contree_rowid from contree
+where contree_rowid!=1 and parent_rowid=(select parent_rowid from contree where contree_rowid=@contree_rowid:int@)
+order by ord

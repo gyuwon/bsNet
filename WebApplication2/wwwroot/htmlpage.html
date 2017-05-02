@@ -22,11 +22,18 @@
     </style>
 </head>
 <body>
-    <button data-click="host.tree_list">트리 리스트</button><br />
+    <span>트리관리 API</span><br />
+    <button data-click="host.tree_list">리스트</button>
     <input id="tree_r" type="text" placeholder="트리 일련번호" />
     <input id="tree_title" type="text" placeholder="트리명" />
-    <button data-click="host.tree_add">트리 추가</button>
-    <br />
+    <button data-click="host.tree_add">추가</button>
+    <button data-click="host.tree_depthadd">뎁스추가</button>
+    <button data-click="host.tree_edit">수정</button>
+    <button data-click="host.tree_del">삭제</button>
+    <button data-click="host.tree_up">위로</button>
+    <button data-click="host.tree_down">아래로</button>
+    <br /><br />
+    <span>컨텐츠관리 API</span><br />
     <input id="contents_r" type="text" />
     <button data-click="host.contents_list">컨텐츠 리스트</button>
 
@@ -38,9 +45,7 @@
                 'host', T = {
                     init: function () {
                         bs.render();
-                        bs.get(function (v) {
-                            alert(v);
-                        }, "professor/contents/contents");
+                        //bs.get(function (v) {alert(v);}, "professor/contents/contents");
                     },
                     tree_list: function () {
                         bs.post(function (v) {
@@ -55,6 +60,41 @@
                             v = JSON.parse(v);
                             console.log(v);
                         }, 'professor/contents/tree/add', 'json', { r: bs.getId('tree_r').S('@value'), title: bs.getId('tree_title').S('@value') });
+                    },
+                    tree_depthadd: function () {
+                        bs.post(function (v) {
+                            alert(v);
+                            v = JSON.parse(v);
+                            console.log(v);
+                        }, 'professor/contents/tree/depthadd', 'json', { r: bs.getId('tree_r').S('@value'), title: bs.getId('tree_title').S('@value') });
+                    },
+                    tree_edit: function () {
+                        bs.post(function (v) {
+                            alert(v);
+                            v = JSON.parse(v);
+                            console.log(v);
+                        }, 'professor/contents/tree/edit', 'json', { r: bs.getId('tree_r').S('@value'), title: bs.getId('tree_title').S('@value') });
+                    },
+                    tree_del: function () {
+                        bs.post(function (v) {
+                            alert(v);
+                            v = JSON.parse(v);
+                            console.log(v);
+                        }, 'professor/contents/tree/del', 'json', { r: bs.getId('tree_r').S('@value') });
+                    },
+                    tree_up: function () {
+                        bs.post(function (v) {
+                            alert(v);
+                            v = JSON.parse(v);
+                            console.log(v);
+                        }, 'professor/contents/tree/up', 'json', { r: bs.getId('tree_r').S('@value') });
+                    },
+                    tree_down: function () {
+                        bs.post(function (v) {
+                            alert(v);
+                            v = JSON.parse(v);
+                            console.log(v);
+                        }, 'professor/contents/tree/down', 'json', { r: bs.getId('tree_r').S('@value') });
                     },
                     contents_list: function () {
                         bs.post(function (v) {
