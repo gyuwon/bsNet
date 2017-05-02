@@ -11,7 +11,7 @@ select teacher_rowid,cmps_rowid,username,regdate from teacher where cmps_rowid=@
 select teacher_rowid,cmps_rowid,username,regdate from teacher where teacher_rowid=@teacher_rowid:int@
 
 #edit : 교수정보 수정 
-update teacher set username=@username:teacher.username@ where teacher_rowid=@teacher_rowid:int@
+update teacher set username=@username:teacher.username@ where cmps_rowid=@cmps_rowid:int@
 
 #leave : 교수 탈퇴
 update teacher set leavedate=getdate() where cmps_rowid=@cmps_rowid:int@
