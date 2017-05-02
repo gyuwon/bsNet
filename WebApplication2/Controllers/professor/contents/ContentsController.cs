@@ -1,4 +1,5 @@
 ﻿using com.bsidesoft.cs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
@@ -51,6 +52,12 @@ namespace WebApplication2.Controllers {
             }
             return Json(new { cat = rs1, list = rs2 });
         }
+        [HttpPost]
+        public IActionResult add(IFormFile upfile) {
+            var result = bs.upfileAdd("remote", "con10", upfile);
+            return Json(new { upfile = result });
+        }
+
         public string _Index(ActionExecutingContext c) {
 
             var a = JObject.Parse("{}");
