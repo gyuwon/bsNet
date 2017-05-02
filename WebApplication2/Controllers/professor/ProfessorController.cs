@@ -43,28 +43,32 @@ namespace WebApplication2.Controllers {
                 }
             }
             var err = bs.valiResult();
-            var row = bs.dbExec(out err, "remote:professor/add", before);
+            var rs0 = bs.dbSelect<Dictionary<string,string>>(out err, "remote:teacher/view_from_cmps_rowid", before);
+            if(null != rs0) {
+                return Json(new { error = "이미 존재하는 교수입니다." });
+            }
+            int teacher_rowid;
+            var row = bs.dbExec(out err, out teacher_rowid, "remote:teacher/add", before);
             if(row != 1) {
                 return Json(new { error = "교수를 추가하지 못했습니다." });
             }
-            /*
-            var teacher_rowid = bs.dbInsertID(); -> bs.dbInsertID() 구현필요. 
-            var rs1 = bs.dbSelect<List<Dictionary<String, String>>>(out err, "remote:professor/view_from_rowid", "teacher_rowid", teacher_rowid);
+            //var teacher_rowid = bs.dbInsertID("remote"); //-> bs.dbInsertID() 구현필요. 
+
+
+            var rs1 = bs.dbSelect<Dictionary<String, String>>(out err, "remote:teacher/view_from_rowid", "teacher_rowid", teacher_rowid + "");
             if(err != null) {
                 return Json(new { error = "교수 정보를 가져오지 못했습니다." });
             }
-            var professor = rs1[0];
             return Json(new {
                 success = 1,
                 professor =  new {
-                    r = professor["teacher_rowid"],
-                    cmps_r = professor["cmps_rowid"],
-                    username = professor["username"],
-                    regdate = professor["regdate"]
+                    r = rs1["teacher_rowid"],
+                    cmps_r = rs1["cmps_rowid"],
+                    username = rs1["username"],
+                    regdate = rs1["regdate"]
                 }
             });
-            */
-            return Json(new {});
+            //return Json(new {});
         }
 
         public Dictionary<string, object> _view1(ActionExecutingContext c)

@@ -64,7 +64,8 @@ namespace WebApplication2.Controllers {
             }
             
             before.Add("parent_rowid", pr);
-            var r = bs.dbExec(out err, "remote:contents/tree/add", before);
+            int insertId;
+            var r = bs.dbExec(out err, out insertId, "remote:contents/tree/add", before);
             if(err != null) {
                 return Json(new { error = "트리 정보를 가져오지 못했습니다." });
             }
