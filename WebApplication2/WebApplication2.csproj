@@ -19,10 +19,6 @@
 
   <ItemGroup>
     <Content Include="wwwroot\test.html" />
-    <Content Include="wwwroot\__test\htmlpage.html">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\__test\professor.html" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
@@ -39,6 +35,10 @@
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="test\" />
+    <Folder Include="wwwroot\upfile\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\bs\bs.csproj" />

@@ -26,10 +26,16 @@
     <script>
         /*bs.post(function (v) {
             alert(v);
-        }, "../professor/professor/add", "json", { r: "12" });*/
+        }, "../professor/add", "json", { cmps_r: "110", username: "김아무개" });
         bs.post(function (v) {
             alert(v);
-        }, "../professor/professor/view1", "json", { cmps_r: "12" });
+        }, "../professor/view1", "json", { cmps_r: "110" });
+        bs.post(function (v) {
+            alert(v);
+        }, "../professor/view2", "json", { r: "16" });*/
+        bs.post(function (v) {
+            alert(v);
+        }, "../professor/edit", "json", { cmps_r: "110", "username": "김수정" });
     </script>
 </body>
 </html>

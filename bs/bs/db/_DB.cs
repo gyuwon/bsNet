@@ -24,12 +24,26 @@ namespace com.bsidesoft.cs {
             var query = new Query(db, sql);
             return queries.TryAdd(key, query);
         }
-        public static int dbExec(out Dictionary<string, ValiResult> err, string query, params string[] kv) {
-            return dbExec(out err, query, opt<object>(kv));
+        public static Int32 dbInsertID(string dbkey) {
+            Query q;
+            var query = dbkey + ":last_insert_id";
+            SqlCommand cmd = dbBegin(query, out q);
+            if(cmd == null) {
+                log("dbSelect:fail to dbBegin - " + query);
+                return 0;
+            }
+            q.prepare(query, cmd);
+            var result = cmd.ExecuteScalar();
+            dbEnd(cmd);
+            return result == DBNull.Value ? 0 : (int)result;
         }
-        public static int dbExec(out Dictionary<string, ValiResult> err, string query, Dictionary<string, object> opt = null) {
+        public static int dbExec(out Dictionary<string, ValiResult> err, out int insertId, string query, params string[] kv) {
+            return dbExec(out err, out insertId, query, opt<object>(kv));
+        }
+        public static int dbExec(out Dictionary<string, ValiResult> err, out int insertId, string query, Dictionary<string, object> opt = null) {
             Query q;
             SqlCommand cmd = dbBegin(query, out q);
+            insertId = 0;
             if(cmd == null) {
                 err = null;
                 log("dbExec:fail to dbBegin - " + query);
@@ -38,6 +52,11 @@ namespace com.bsidesoft.cs {
             err = q.prepare(query, cmd, opt);
             if(err != null) return 0;
             int row = cmd.ExecuteNonQuery();
+
+            cmd = cmd.Connection.CreateCommand();
+            cmd.CommandText = "SELECT @@IDENTITY";
+            Object id = cmd.ExecuteScalar();
+            insertId = id == DBNull.Value ? 0 : bs.to<int>(id); 
             dbEnd(cmd);
             return row;
         }
@@ -101,12 +120,22 @@ namespace com.bsidesoft.cs {
                     ((dynamic)result).Add(record1);
                 }
                 break;
+            case "dictionary<string,string>":
+                if(rs.Read()) {
+                    result = (dynamic)new Dictionary<String, String>();
+                    Object[] record = new Object[j];
+                    rs.GetValues(record);
+                    for(var i = 0; i < record.Length; i++) {
+                        ((dynamic)result).Add(rs.GetName(i), record.GetValue(i) + "");
+                    }
+                }
+                break;
             }
             dbEnd(cmd);
             return result;
         }
 
-        private static ConcurrentDictionary<string, SqlConnection> conns = new ConcurrentDictionary<string, SqlConnection>();
+        private static Dictionary<string, string> conns = new Dictionary<string, string>();
         private static ConcurrentDictionary<string, Query> queries = new ConcurrentDictionary<string, Query>();
         private static void dbInit(IConfigurationRoot configuration) {
             var dbPath = configuration.GetSection("Databases")["Path"];
@@ -179,29 +208,18 @@ namespace com.bsidesoft.cs {
                 }
                 //쿼리문을 등록한다.
                 foreach(var q in sqls) dbQuery(dbKey, q.Key, q.Value);
+                dbQuery(dbKey, "last_insert_id", "SELECT @@IDENTITY");
             }
         }
         private static void dbConn(string key, string conn) {
-            if(conns.ContainsKey(key)) {
-                log("dbConn:set:no exist key - " + key);
-                return;
-            }
-            if(!conns.TryAdd(key, new SqlConnection(conn))) {
-                log("dbConn:set:fail to add key - " + key + ", " + conn);
-                return;
-            }
+            if(!conns.ContainsKey(key)) conns[key] = conn;
         }
         private static SqlConnection dbConn(string key) {
             if(!conns.ContainsKey(key)) {
                 log("dbConn:get:no exist key - " + key);
                 return null;
             }
-            SqlConnection conn;
-            if(!conns.TryGetValue(key, out conn)) {
-                log("dbConn:get:fail to get key - " + key);
-                return null;
-            }
-            return conn;
+            return new SqlConnection(conns[key]);
         }
         private static SqlCommand dbBegin(string query, out Query q) {
             string[] strs = query.Split(':');

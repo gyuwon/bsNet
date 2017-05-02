@@ -13,6 +13,9 @@ namespace com.bsidesoft.cs {
             internal void add(string key, string r) {
                 add(key, new RuleSet(r));
             }
+            public bool hasKey(string key) {
+                return ruleSets.ContainsKey(key);
+            }
             public bool check(out Dictionary<string, ValiResult> result, params string[] kv) {
                 return check(out result, opt<object>(kv));
             }
