@@ -219,12 +219,7 @@ namespace com.bsidesoft.cs {
                 log("dbConn:get:no exist key - " + key);
                 return null;
             }
-            string conn;
-            if(!conns.TryGetValue(key, out conn)) {
-                log("dbConn:get:fail to get key - " + key);
-                return null;
-            }
-            return new SqlConnection(conn);
+            return new SqlConnection(conns[key]);
         }
         private static SqlCommand dbBegin(string query, out Query q) {
             string[] strs = query.Split(':');
