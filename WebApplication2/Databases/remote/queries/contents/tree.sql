@@ -5,6 +5,9 @@ select @parent_rowid:int@,@title:contree.title@,(
 )from(select 'x'x)a 
 where 0=(select count(*)from contree where parent_rowid=@parent_rowid:int@ and title=@title:contree.title@)
 
+#view
+select parent_rowid from contree where contree_rowid=@contree_rowid:int@
+
 #list : 컨텐츠 리스트
 select contree_rowid,parent_rowid,title,ord,regdate from contree where contree_rowid!=1 order by parent_rowid,ord
 

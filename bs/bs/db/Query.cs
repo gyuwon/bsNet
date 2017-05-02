@@ -110,6 +110,9 @@ namespace com.bsidesoft.cs {
                     return "@" + v + "@";
                 }
             }
+            internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd) {
+                return prepare(q, cmd, new Dictionary<string, object>());
+            }
             internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd, Dictionary<string, object> opt) {
                 var result = valiResult();
                 vali.setMsg(q);

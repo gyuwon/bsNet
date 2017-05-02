@@ -18,6 +18,7 @@ namespace com.bsidesoft.cs {
             {typeof(List<Dictionary<String, String>>), "list<dictionary<string,string>>"},
             {typeof(List<String>), "list<string>"},
             {typeof(List<int>), "list<int>"},
+            {typeof(Dictionary<String, String>), "dictionary<string,string>"}
         };
         public static T to<T>(object v) {
             if (v is String && (String)v == "") v = default(T); 

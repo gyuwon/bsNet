@@ -17,6 +17,9 @@ namespace com.bsidesoft.cs {
 
             public void OnActionExecuting(ActionExecutingContext c) {
                 //var v = invoke(c) ?? invokeJson(c);
+                if(invoke(c)) {
+                    invokeJson(c);
+                }
 
                 
                 //인증요청이 있다면 인증처리
