@@ -111,7 +111,8 @@ namespace WebApplication2.Controllers {
             }
 
             var err = bs.valiResult();
-            var r = bs.dbExec(out err, "remote:contents/tree/edit", before);
+            int insertId;
+            var r = bs.dbExec(out err, out insertId, "remote:contents/tree/edit", before);
             if(r != 1) {
                 return Json(new { error = "트리 정보를 수정하는데 실패했습니다." });
             }
@@ -149,7 +150,8 @@ namespace WebApplication2.Controllers {
             }
 
             var err = bs.valiResult();
-            var r = bs.dbExec(out err, "remote:contents/tree/del", before);
+            int insertId;
+            var r = bs.dbExec(out err, out insertId, "remote:contents/tree/del", before);
             if(r != 1) {
                 return Json(new { error = "트리 정보를 삭제하는데 실패했습니다." });
             }
@@ -196,7 +198,8 @@ namespace WebApplication2.Controllers {
                         { "contree_rowid", rs[i]["contree_rowid"] },
                         { "ord", i + 1 }
                     };
-                    var r = bs.dbExec(out err, "remote:contents/tree/ord", before);
+                    int insertId;
+                    var r = bs.dbExec(out err, out insertId, "remote:contents/tree/ord", before);
                     if(r != 1) {
                         return Json(new { error = "트리 위치를 새로 설정하는데 실패했습니다." });
                     }
@@ -245,7 +248,8 @@ namespace WebApplication2.Controllers {
                         { "contree_rowid", rs[i]["contree_rowid"] },
                         { "ord", i + 1 }
                     };
-                    var r = bs.dbExec(out err, "remote:contents/tree/ord", before);
+                    int insertId;
+                    var r = bs.dbExec(out err, out insertId, "remote:contents/tree/ord", before);
                     if(r != 1) {
                         return Json(new { error = "트리 위치를 새로 설정하는데 실패했습니다." });
                     }
@@ -285,7 +289,8 @@ namespace WebApplication2.Controllers {
             }
 
             var err = bs.valiResult();
-            var r = bs.dbExec(out err, "remote:contents/tree/del", before);
+            int insertId;
+            var r = bs.dbExec(out err, out insertId, "remote:contents/tree/del", before);
             if(r != 1) {
                 return Json(new { error = "트리 정보를 삭제하는데 실패했습니다." });
             }

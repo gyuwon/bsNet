@@ -24,18 +24,17 @@ namespace com.bsidesoft.cs {
             var query = new Query(db, sql);
             return queries.TryAdd(key, query);
         }
-        public static Int32 dbInsertID(string dbkey) {
+        public static bool dbIsExistTable(string db, string tablename) {
             Query q;
-            var query = dbkey + ":last_insert_id";
+            var query = db + ":is_exist_table"; 
             SqlCommand cmd = dbBegin(query, out q);
             if(cmd == null) {
-                log("dbSelect:fail to dbBegin - " + query);
-                return 0;
+                log("dbExec:fail to dbBegin - " + query);
+                return false;
             }
-            q.prepare(query, cmd);
+            q.prepare(query, cmd, new Dictionary<string, object>() { { "tablename", tablename } });
             var result = cmd.ExecuteScalar();
-            dbEnd(cmd);
-            return result == DBNull.Value ? 0 : (int)result;
+            return result == DBNull.Value ? false : (bs.to<int>(result) == 1 ? true : false);
         }
         public static int dbExec(out Dictionary<string, ValiResult> err, out int insertId, string query, params string[] kv) {
             return dbExec(out err, out insertId, query, opt<object>(kv));
@@ -208,7 +207,7 @@ namespace com.bsidesoft.cs {
                 }
                 //쿼리문을 등록한다.
                 foreach(var q in sqls) dbQuery(dbKey, q.Key, q.Value);
-                dbQuery(dbKey, "last_insert_id", "SELECT @@IDENTITY");
+                dbQuery(dbKey, "is_exist_table", "select count(*)from information_schema.tables where table_name=@tablename:string@");
             }
         }
         private static void dbConn(string key, string conn) {
