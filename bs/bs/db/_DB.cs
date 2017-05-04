@@ -208,9 +208,6 @@ namespace com.bsidesoft.cs {
                 //쿼리문을 등록한다.
                 foreach(var q in sqls) dbQuery(dbKey, q.Key, q.Value);
                 dbQuery(dbKey, "is_exist_table", "select count(*)from information_schema.tables where table_name=@tablename:string@");
-                dbQuery(dbKey, "upfile/get_cat", "select t0.upfilecat_rowid,t0.title,t0.intype,t0.inkey,t0.infilter,t0.basepath,t0.maxsize,STUFF((select ',' + title from upfilecatext where upfilecat_rowid = t0.upfilecat_rowid FOR XML PATH('')), 1, 1, '')exts from upfilecat t0 where t0.title=@title:string@");
-                dbQuery(dbKey, "upfile/add", "insert into upfile(upfilecatext_rowid,originname,upfile)values((select upfilecatext_rowid from upfilecatext where upfilecat_rowid=@upfilecat_rowid:integer@ and title=@ext:string@),@originname:upfile.originname@,@upfile:upfile.upfile@)");
-                dbQuery(dbKey, "upfile/get", "select t0.upfile_rowid,t0.originname,t0.upfile,t2.title cat,t1.title ext,t0.regdate from upfile t0 left join upfilecatext t1 on t0.upfilecatext_rowid=t1.upfilecatext_rowid left join upfilecat t2 on t1.upfilecat_rowid=t2.upfilecat_rowid where upfile_rowid=@upfile_rowid:integer@");
             }
         }
         private static void dbConn(string key, string conn) {

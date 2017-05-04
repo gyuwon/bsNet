@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace WebApplication2.Controllers {
     public class ContentsController:Controller {
@@ -54,6 +55,10 @@ namespace WebApplication2.Controllers {
         }
         [HttpPost]
         public IActionResult add(IFormFile upfile) {
+            bs.upfileFilterAdd("con10Check", (Stream data, string ext) => {
+                return data;            
+            });
+
             var result = bs.upfileAdd("remote", "con10", upfile);
             return Json(new { upfile = result });
         }

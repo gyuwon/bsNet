@@ -29,18 +29,23 @@ namespace WebApplication2 {
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
+            var i = 0;
             app.UseMvc(routes => {
                 routes.MapRoute(
-                    name: "a",
+                    name: (i++) + "",
                     template: "professor/contents/{controller=Contents}/{action=Index}"
                 );
                 routes.MapRoute(
-                    name: "c",
+                    name: (i++) + "",
                     template: "professor/{action=Index}",
                     defaults: new { controller = "Professor" }
                 );
                 routes.MapRoute(
-                    name: "b",
+                    name: (i++) + "",
+                    template: "professor/popup/{controller=Student}/{action=Index}"
+                );
+                routes.MapRoute(
+                    name: (i++) + "",
                     template: "{action=Index}",
                     defaults: new { controller = "Home" }
                 );
