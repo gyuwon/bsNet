@@ -11,6 +11,7 @@ namespace WebApplication2.Controllers {
         public TreeController(bs b) {
             bs = b;
         }
+        /*
         //professor/contents/tree/list
         public Dictionary<string, object> _list(ActionExecutingContext c) {
             var k = bs.reqPath(c.HttpContext.Request); //professor/contents/tree/list
@@ -176,6 +177,7 @@ namespace WebApplication2.Controllers {
                 };
             }
         }
+        
         [HttpPost]
         public IActionResult up() {
             var before = (Dictionary<string, object>)bs.before(this);
@@ -207,6 +209,7 @@ namespace WebApplication2.Controllers {
             }
             return Json(new { data = new { success = 1 } });
         }
+        
         //professor/contents/tree/down
         public Dictionary<string, object> _down(ActionExecutingContext c) {
             var j = bs.reqJson(c.HttpContext.Request); //{"r":3}
@@ -306,5 +309,6 @@ namespace WebApplication2.Controllers {
             var rs = bs.dbSelect<List<Object[]>>(out err, "remote:a", "title", "1PD시험a");
             return Json(new { data = rs, a = bs.before(this) });
         }
+        */
     }
 }

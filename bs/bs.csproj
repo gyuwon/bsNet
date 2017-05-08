@@ -11,11 +11,13 @@
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.0" />
+    <PackageReference Include="NETCore.MailKit" Version="1.0.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.0" />
     <PackageReference Include="System.Security.Cryptography.Csp" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="db\bs\" />
     <Folder Include="filters\bs\" />
   </ItemGroup>
 </Project>

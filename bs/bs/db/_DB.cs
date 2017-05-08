@@ -5,9 +5,22 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
+        private static Dictionary<string, string> conns = new Dictionary<string, string>();
+        private static ConcurrentDictionary<string, Query> queries = new ConcurrentDictionary<string, Query>();
+        private static void dbConn(string key, string conn) {
+            if(!conns.ContainsKey(key)) conns[key] = conn;
+        }
+        private static SqlConnection dbConnGet(string key) {
+            if(!conns.ContainsKey(key)) {
+                log("dbConn:get:no exist key - " + key);
+                return null;
+            }
+            return new SqlConnection(conns[key]);
+        }
         public static void dbQuery(string path) {
             foreach(var k in JObject.Parse(File.ReadAllText(path))) {
                 if(!dbQuery(k.Key, k.Value.Value<string>(), path)) {
@@ -25,117 +38,13 @@ namespace com.bsidesoft.cs {
             return queries.TryAdd(key, query);
         }
         public static bool dbIsExistTable(string db, string tablename) {
-            Query q;
-            var query = db + ":is_exist_table"; 
-            SqlCommand cmd = dbBegin(query, out q);
-            if(cmd == null) {
-                log("dbExec:fail to dbBegin - " + query);
-                return false;
-            }
-            q.prepare(query, cmd, new Dictionary<string, object>() { { "tablename", tablename } });
+            var query = db + ":is_exist_table";
+            var conn = dbConnGet(db);
+            var cmd = conn.CreateCommand();
+            Query.get(query).prepare(query, cmd, new Dictionary<string, object>() { { "tablename", tablename } });
             var result = cmd.ExecuteScalar();
             return result == DBNull.Value ? false : (bs.to<int>(result) == 1 ? true : false);
         }
-        public static int dbExec(out Dictionary<string, ValiResult> err, out int insertId, string query, params string[] kv) {
-            return dbExec(out err, out insertId, query, opt<object>(kv));
-        }
-        public static int dbExec(out Dictionary<string, ValiResult> err, out int insertId, string query, Dictionary<string, object> opt = null) {
-            Query q;
-            SqlCommand cmd = dbBegin(query, out q);
-            insertId = 0;
-            if(cmd == null) {
-                err = null;
-                log("dbExec:fail to dbBegin - " + query);
-                return 0;
-            }
-            err = q.prepare(query, cmd, opt);
-            if(err != null) return 0;
-            int row = cmd.ExecuteNonQuery();
-
-            cmd = cmd.Connection.CreateCommand();
-            cmd.CommandText = "SELECT @@IDENTITY";
-            Object id = cmd.ExecuteScalar();
-            insertId = id == DBNull.Value ? 0 : bs.to<int>(id); 
-            dbEnd(cmd);
-            return row;
-        }
-        public static T dbSelect<T>(out Dictionary<string, ValiResult> err, string query, params string[] kv) {
-            return dbSelect<T>(out err, query, opt<object>(kv));
-        }
-        public static T dbSelect<T>(out Dictionary<string, ValiResult> err, string query, Dictionary<string, object> opt = null) {
-            Query q;
-            SqlCommand cmd = dbBegin(query, out q);
-            if(cmd == null) {
-                err = null;
-                log("dbSelect:fail to dbBegin - " + query);
-                return default(T);
-            }
-            err = q.prepare(query, cmd, opt);
-            if(err != null) return default(T);
-            SqlDataReader rs = cmd.ExecuteReader();
-            int j = rs.FieldCount;
-            T result = default(T);
-            switch(TYPES[typeof(T)]) {
-            case "int":
-                if(j == 1 && rs.Read()) result = (dynamic)rs.GetInt32(0);
-                break;
-            case "bool":
-                if(j == 1 && rs.Read()) result = (dynamic)rs.GetBoolean(0);
-                break;
-            case "string":
-                if(j == 1 && rs.Read()) result = (dynamic)rs.GetString(0);
-                break;
-            case "float":
-                if(j == 1 && rs.Read()) result = (dynamic)rs.GetFloat(0);
-                break;
-            case "double":
-                if(j == 1 && rs.Read()) result = (dynamic)rs.GetDouble(0);
-                break;
-            case "list<string>":
-                result = (dynamic)new List<String>();
-                while(rs.Read()) ((dynamic)result).Add(rs.GetString(0));
-                break;
-            case "list<int>":
-                result = (dynamic)new List<int>();
-                while(rs.Read()) ((dynamic)result).Add(rs.GetInt32(0));
-                break;
-            case "list<object[]>":
-                result = (dynamic)new List<Object[]>();
-                while(rs.Read()) {
-                    Object[] record = new Object[j];
-                    rs.GetValues(record);
-                    ((dynamic)result).Add(record);
-                }
-                break;
-            case "list<dictionary<string,string>>":
-                result = (dynamic)new List<Dictionary<String, String>>();
-                while(rs.Read()) {
-                    Dictionary<String, String> record1 = new Dictionary<String, String>();
-                    Object[] record2 = new Object[j];
-                    rs.GetValues(record2);
-                    for(var i = 0; i < record2.Length; i++) {
-                        record1.Add(rs.GetName(i), record2.GetValue(i) + "");
-                    }
-                    ((dynamic)result).Add(record1);
-                }
-                break;
-            case "dictionary<string,string>":
-                if(rs.Read()) {
-                    result = (dynamic)new Dictionary<String, String>();
-                    Object[] record = new Object[j];
-                    rs.GetValues(record);
-                    for(var i = 0; i < record.Length; i++) {
-                        ((dynamic)result).Add(rs.GetName(i), record.GetValue(i) + "");
-                    }
-                }
-                break;
-            }
-            dbEnd(cmd);
-            return result;
-        }
-
-        private static Dictionary<string, string> conns = new Dictionary<string, string>();
-        private static ConcurrentDictionary<string, Query> queries = new ConcurrentDictionary<string, Query>();
         private static void dbInit(IConfigurationRoot configuration) {
             var dbPath = configuration.GetSection("Databases")["Path"];
             var dbDir = pathNormalize(false, dbPath.Split('/')); //전체 Dir
@@ -210,36 +119,70 @@ namespace com.bsidesoft.cs {
                 dbQuery(dbKey, "is_exist_table", "select count(*)from information_schema.tables where table_name=@tablename:string@");
             }
         }
-        private static void dbConn(string key, string conn) {
-            if(!conns.ContainsKey(key)) conns[key] = conn;
-        }
-        private static SqlConnection dbConn(string key) {
-            if(!conns.ContainsKey(key)) {
-                log("dbConn:get:no exist key - " + key);
-                return null;
+        
+        public static void db(bool isTransaction, string target, Func<SqlHandler, bool> f) {
+            var conn = dbConnGet(target);
+            var cmd = conn.CreateCommand();
+            SqlTransaction ts = null;
+            if(isTransaction) {
+                ts = conn.BeginTransaction(Guid.NewGuid() + "");
+                cmd.Transaction = ts;
             }
-            return new SqlConnection(conns[key]);
-        }
-        private static SqlCommand dbBegin(string query, out Query q) {
-            string[] strs = query.Split(':');
-            string target = strs[0], sqlKey = strs[1];
-            if(!queries.TryGetValue(sqlKey, out q)) {
-                log("dbBegin:fail to get query - " + sqlKey);
-                return null;
+            conn.Open();
+            var result = f(new SqlHandler(cmd));
+            if(isTransaction) {
+                if(result) {
+                    try {
+                        ts.Commit();
+                    } catch(Exception e0) {
+                        log("db:fail to commit - " + e0);
+                        try {
+                            ts.Rollback();
+                        } catch(Exception e1) {
+                            log("db:fail to Rollback from commit - " + e1);
+                        }
+                    }
+                } else {
+                    try {
+                        ts.Rollback();
+                    } catch(Exception e) {
+                        log("db:fail to rollback - " + e);
+                    }
+                }
             }
-            SqlConnection conn = dbConn(target);
-            if(conn == null) return null;
-            try {
-                conn.Open();
-                SqlCommand cmd = conn.CreateCommand();
-                return cmd;
-            } catch(SqlException e) {
-                log("dbBegin:fail to connection - " + e.Message);
-            }
-            return null;
+            conn.Close();
         }
-        private static void dbEnd(SqlCommand cmd) {
-            cmd.Connection.Close();
+        public static async Task dbAsync(bool isTransaction, string target, Func<SqlHandler, Task<bool>> f) {
+            var conn = dbConnGet(target);
+            var cmd = conn.CreateCommand();
+            SqlTransaction ts = null;
+            if(isTransaction) {
+                ts = conn.BeginTransaction(Guid.NewGuid() + "");
+                cmd.Transaction = ts;
+            }
+            await conn.OpenAsync();
+            var result = await f(new SqlHandler(cmd));
+            if(isTransaction) {
+                if(result) {
+                    try {
+                        ts.Commit();
+                    } catch(Exception e0) {
+                        log("dbAsync:fail to commit - " + e0);
+                        try {
+                            ts.Rollback();
+                        } catch(Exception e1) {
+                            log("dbAsync:fail to Rollback from commit - " + e1);
+                        }
+                    }
+                } else {
+                    try {
+                        ts.Rollback();
+                    } catch(Exception e) {
+                        log("dbAsync:fail to rollback - " + e);
+                    }
+                }
+            }
+            conn.Close();            
         }
     }
 }

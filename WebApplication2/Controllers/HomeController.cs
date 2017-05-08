@@ -21,13 +21,47 @@ namespace WebApplication2.Controllers {
 
         public string _Index(ActionExecutingContext c) {
             var a = JObject.Parse("{}");
-            
             return "test";
         }
-        public IActionResult Index(int id) {
+        public async Task<IActionResult> Index() {
+            var result = bs.dbResult<List<Object[]>>();
+            await bs.dbAsync(false, "test", async (db) => {
+                result = await db.selectAsync<List<Object[]>>("a", "title", "1PD시험a");
+                return true;
+            }); 
+            return Json(new { data = result.result, a = bs.before(this), b = bs.fr<string>(true, "test.html")});
+        }
+        public async Task<IActionResult> insert() {
+            bs.dbQuery("test", "hika0", "insert into hika00(title)values(@title:hika00.title@)");
+            bs.dbQuery("test", "hika1", "select id, title from hika00");
+            var result = bs.dbResult<List<Object[]>>();
+            await bs.dbAsync(false, "test", async (db) => {
+                await db.execAsync("hika0", "title", Guid.NewGuid() + "");
+                result = await db.selectAsync<List<Object[]>>("hika1");
+                return true;
+            });
+            if(result.noRecord) {
+                if(result.valiError) {
+                    //result.vali
+                } else if(result.castFail){
+
+                }
+            } else {
+                //정상
+            }
+            return Json(new { data = result.result});
+        }
+        public IActionResult insert2() {
+            bs.dbQuery("test", "hika0", "insert into hika00(title)values(@title:hika00.title@)");
+            bs.dbQuery("test", "hika1", "select id, title from hika00");
             var r = bs.valiResult();
-            var rs = bs.dbSelect<List<Object[]>>(out r, "test:a", "title", "1PD시험a");
-            return Json(new { data = rs, a = bs.before(this), b = bs.fr<string>(true, "test.html")});
+            var result = bs.dbResult<List<Object[]>>();
+            bs.db(false, "test", (db) => {
+                db.exec("hika0", "title", Guid.NewGuid() + "");
+                result = db.select<List<Object[]>>("hika1");
+                return true;
+            });
+            return Json(new { data = result.result });
         }
         public async Task<IActionResult> upload(List<IFormFile> upfile) {
             var result = new List<string>();
