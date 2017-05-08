@@ -12,16 +12,18 @@ namespace com.bsidesoft.cs {
             {typeof(float), "float"}, {typeof(double), "double"}, {typeof(decimal), "decimal"},
             {typeof(string), "string"},{typeof(string[]), "string[]"},
 
+            {typeof(byte[]), "byte[]"}, {typeof(Stream), "stream"},
+
             {typeof(StreamReader), "streamreader"}, {typeof(FileStream), "filestream"},
             {typeof(JObject), "jobject"},
             {typeof(List<Object[]>), "list<object[]>"},
-            {typeof(List<Dictionary<String, String>>), "list<dictionary<string,string>>"},
-            {typeof(List<String>), "list<string>"},
+            {typeof(List<Dictionary<string, string>>), "list<dictionary<string,string>>"},
+            {typeof(List<string>), "list<string>"},
             {typeof(List<int>), "list<int>"},
-            {typeof(Dictionary<String, String>), "dictionary<string,string>"}
+            {typeof(Dictionary<string, string>), "dictionary<string,string>"}
         };
         public static T to<T>(object v) {
-            if (v is String && (String)v == "") v = default(T); 
+            if (v is string && (string)v == "") v = default(T); 
             return (T)Convert.ChangeType(v, typeof(T));
         }
     }

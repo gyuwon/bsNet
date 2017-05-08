@@ -104,6 +104,7 @@ namespace com.bsidesoft.cs {
                     if(!rs.HasRows) result.noRecord = true;
                     else if(rsResult.ContainsKey(type)) result.result = (T)rsResult[type](rs, rs.FieldCount);
                     else result.noRecord = result.castFail = true;
+                    rs.Dispose();
                 }
                 return result;
             }
@@ -124,6 +125,7 @@ namespace com.bsidesoft.cs {
                     if(!rs.HasRows) result.noRecord = true;
                     else if(rsResult.ContainsKey(type)) result.result = (T)rsResult[type](rs, rs.FieldCount);
                     else result.noRecord = result.castFail = true;
+                    rs.Dispose();
                 }
                 return result;
             }
