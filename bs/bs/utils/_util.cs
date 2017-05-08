@@ -36,9 +36,5 @@ namespace com.bsidesoft.cs {
             }
             return result;
         }
-        /*
-        public static Dictionary<string, string> opt(JObject obj) {
-            
-        }*/
     }
 }

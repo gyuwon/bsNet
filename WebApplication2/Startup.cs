@@ -49,6 +49,11 @@ namespace WebApplication2 {
                     template: "{action=Index}",
                     defaults: new { controller = "Home" }
                 );
+                routes.MapRoute(
+                    name: (i++) + "",
+                    template: "rsa/{action=Index}",
+                    defaults: new { controller = "Rsa" }
+                );
             });
         }
     }

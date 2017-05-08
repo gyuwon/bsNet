@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>RSA</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0
+        }
+
+        #doc {
+            margin: 10px
+        }
+    </style>
+</head>
+<body>
+    <script src="//www.bsidesoft.com/api/js/5/build/test.php"></script>
+    <script src="security.js"></script>
+    <script>
+bs.post(function(v){
+	alert(v);
+}, '../rsa/test', 'email', 'jidolstar@gmail.com', 'pw', 'aaaaa')
+    </script>
+</body>
+</html>
