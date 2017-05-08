@@ -7,7 +7,15 @@ using System.Text.RegularExpressions;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
-        class Query {
+        internal class Query {
+            internal static Query get(string query) {
+                Query q;
+                if(!queries.TryGetValue(query, out q)) {
+                    log("get:fail to get query - " + query);
+                    return null;
+                }
+                return q;
+            }
             private static Regex qsep = new Regex("@([^@]+)@");
             private static Dictionary<string, SqlDbType> fieldType = new Dictionary<string, SqlDbType>() {
                 {"bit", SqlDbType.Bit}, {"tinyint", SqlDbType.TinyInt}, {"smallint", SqlDbType.SmallInt},
@@ -37,14 +45,17 @@ namespace com.bsidesoft.cs {
             private List<Item> param = new List<Item>();
             private Dictionary<string, int> keys = new Dictionary<string, int>();
             private Vali vali = new Vali();
-
+            
             public Query(string target, string query) {
                 db = target;
                 sql = qsep.Replace(query, parse);
             }
+            internal bool isInsert() {
+                return sql.Contains("insert into");
+            }
             private Dictionary<string, Object[]> tInfo(string table) {
                 if(!tableInfo.ContainsKey(table)) {
-                    SqlConnection conn = dbConn(db);
+                    SqlConnection conn = dbConnGet(db);
                     if(conn == null) return null;
                     try {
                         conn.Open();
@@ -110,16 +121,17 @@ namespace com.bsidesoft.cs {
                     return "@" + v + "@";
                 }
             }
-            internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd) {
-                return prepare(q, cmd, new Dictionary<string, object>());
+            internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd, params object[] arg) {
+                return prepare(q, cmd, opt<object>(arg));
             }
-            internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd, Dictionary<string, object> opt) {
+            internal Dictionary<string, ValiResult> prepare(string q, SqlCommand cmd, Dictionary<string, object> opt = null) {
                 var result = valiResult();
                 vali.setMsg(q);
                 if(!vali.check(out result, opt)) return result;
                 var query = sql;
                 foreach(var k in replacer) query = new Regex("@" + k + "@").Replace(query, opt[k] + "");
                 cmd.CommandText = query;
+                cmd.Parameters.Clear();
                 foreach(var k in param) {
                     for(var i = keys[k.key]; i > -1; i--) {
                         var p = new SqlParameter("@" + k.key + "_" + i, k.type);

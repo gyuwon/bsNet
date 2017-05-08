@@ -11,16 +11,18 @@ namespace com.bsidesoft.cs {
         public static bool isFAIL(object v) {
             return v == FAIL;
         }
-        public static Dictionary<string, T> opt<T>(string[] kv) {
-            Dictionary<string, T> opt = null;
-            if(kv.Length > 0) {
-                if(kv.Length % 2 != 0) {
-                    log("opt:invalid params(length needs even:...k,v)" + kv.Length);
-                    return opt;
-                }
-                opt = new Dictionary<string, T>();
-                for(var i = 0; i < kv.Length;) opt.Add(kv[i++], (dynamic)kv[i++]);
+        public static Dictionary<string, T> opt<T>(object[] kv) {
+            if(kv.Length == 0) {
+                log("opt:no params");
+                return null;
             }
+            if(kv.Length % 2 != 0) {
+                log("opt:length is odd - " + kv.Length);
+                return null;
+            }
+            var opt = new Dictionary<string, T>();
+            var type = typeof(T);
+            for(var i = 0; i < kv.Length;) opt.Add(kv[i++] + "", (T)Convert.ChangeType(kv[i++], type));
             return opt;
         }   
 

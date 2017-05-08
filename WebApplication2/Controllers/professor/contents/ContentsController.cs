@@ -13,6 +13,7 @@ namespace WebApplication2.Controllers {
         public ContentsController(bs b) {
             bs = b;
         }
+        /*
         public Dictionary<string, object> _list(ActionExecutingContext c) {
             var j = bs.reqJson(c.HttpContext.Request); //{"r":3}
             var k = bs.reqPath(c.HttpContext.Request); //professor/contents/contents/list
@@ -75,5 +76,6 @@ namespace WebApplication2.Controllers {
             var isExist = bs.dbIsExistTable("remote", "cls");
             return Json(new { isExist = isExist, data = rs, a = bs.before(this) });
         }
+        */
     }
 }

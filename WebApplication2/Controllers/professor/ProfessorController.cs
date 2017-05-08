@@ -10,6 +10,7 @@ namespace WebApplication2.Controllers {
         public ProfessorController(bs b) {
             bs = b;
         }
+        /*
         public Dictionary<string, object> _add(ActionExecutingContext c) {
             var j = bs.reqJson(c.HttpContext.Request); //{"cmps_r":3, "username":"김교수"}
             var k = bs.reqPath(c.HttpContext.Request); //professor/add
@@ -213,7 +214,7 @@ namespace WebApplication2.Controllers {
                 }
             });
         }
-
+        */
 
     }
 }
