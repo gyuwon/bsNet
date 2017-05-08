@@ -22,7 +22,14 @@ namespace com.bsidesoft.cs {
             }
             var opt = new Dictionary<string, T>();
             var type = typeof(T);
-            for(var i = 0; i < kv.Length;) opt.Add(kv[i++] + "", (T)Convert.ChangeType(kv[i++], type));
+            for(var i = 0; i < kv.Length;) {
+                object k = kv[i++], v = kv[i++];
+                if(v is T) opt.Add(k + "", (T)Convert.ChangeType(v, type));
+                else {
+                    log("opt:invalid typeT - " + typeof(T) + " - " + v);
+                    return null;
+                }
+            }
             return opt;
         }   
 

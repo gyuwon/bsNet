@@ -38,6 +38,7 @@ namespace com.bsidesoft.cs {
                 }},
                 {"dictionary<string,string>", (rs, fc)=>{
                     var v = new Dictionary<String, String>();
+                    if(!rs.Read()) return v;
                     for(var i = 0; i < fc; i++) v.Add(rs.GetName(i), rs.GetValue(i) + "");
                     return v;
                 }}

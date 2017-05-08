@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
@@ -24,83 +25,87 @@ namespace com.bsidesoft.cs {
                 upfileFilters[filterName] = filter;
             }
         }
-        public static UpfileResult upfileAdd(string db, string catname, IFormFile file) {
+        public static async Task<UpfileResult> upfileAdd(string dbKey, string catname, IFormFile file) {
             if(file.Length == 0) return null;
-            //기본정보 가져오기 
-            var info = upfileReady(db, catname);
-            if(null == info) {
-                return null;
-            }
-
-            //파일명
-            var filename = upfileName(file);
-
-            //확장자 검사 
-            var ext = upfileExt(filename);
-            string[] exts = (dynamic)info["exts"];
-            bool find = false;
-            for(var i = 0; i < exts.Length; i++) {
-                if(exts[i] == ext) {
-                    find = true;
-                    break;
+            upfileInit(dbKey);
+            UpfileResult result = null;
+            await dbAsync(false, dbKey, async (db) => {
+                //기본정보 가져오기 
+                var info = await upfileReady(db, catname);
+                if(null == info) {
+                    return false;
                 }
-            }
-            if(!find) {
-                log("Wrong file extension");
-                return null;
-            }
 
-            //파일크기 검사 
-            if(file.Length > (dynamic)info["maxsize"]) {
-                log("Exceeded size");
-                return null;
-            }
+                //파일명
+                var filename = upfileName(file);
 
-            var newfilename = Guid.NewGuid() + "." + ext;
-            var savePath = info["fullPath"] + "\\" + newfilename;
-            var filterName = (string)info["filterName"];
-            if("" != filterName) {
-                //TODO 파일 필터링 
-                //임시로 파일을 메모리에 적재한 뒤, 필터로 밀어줄 것, 성공시 파일저장도 해야 함
-                if(!upfileFilters.ContainsKey(filterName)){
-                    log("Cannot found upfile filter. name=" + info["filterName"]);
-                    return null;
+                //확장자 검사 
+                var ext = upfileExt(filename);
+                string[] exts = to<string[]>(info["exts"]);
+                bool find = false;
+                for(var i = 0; i < exts.Length; i++) {
+                    if(exts[i] == ext) {
+                        find = true;
+                        break;
+                    }
                 }
-                var filter = upfileFilters[filterName];
-                Stream st;
-                st = file.OpenReadStream();
-                var newSt = filter(st, ext);
-                if(newSt != st) st.Dispose();
-                if(null == newSt) {
-                    log("Wrong file");
-                    return null;
+                if(!find) {
+                    log("Wrong file extension");
+                    return false;
+                }
+
+                //파일크기 검사 
+                if(file.Length > to<long>(info["maxsize"])) {
+                    log("Exceeded size");
+                    return false;
+                }
+
+                var newfilename = Guid.NewGuid() + "." + ext;
+                var savePath = info["fullPath"] + "\\" + newfilename;
+                var filterName = (string)info["filterName"];
+                if("" != filterName) {
+                    if(!upfileFilters.ContainsKey(filterName)) {
+                        log("Cannot found upfile filter. name=" + info["filterName"]);
+                        return false;
+                    }
+                    var filter = upfileFilters[filterName];
+                    Stream st;
+                    st = file.OpenReadStream();
+                    var newSt = filter(st, ext);
+                    if(newSt != st) st.Dispose();
+                    if(null == newSt) {
+                        log("Wrong file");
+                        return false;
+                    } else {
+                        var fst = new FileStream(savePath, FileMode.Create);
+                        await newSt.CopyToAsync(fst);
+                        newSt.Dispose();
+                        fst.Dispose();
+                    }
                 } else {
                     var fst = new FileStream(savePath, FileMode.Create);
-                    newSt.CopyTo(fst);
-                    newSt.Dispose();
+                    await file.CopyToAsync(fst);
                     fst.Dispose();
                 }
-            } else {
-                var fst = new FileStream(savePath, FileMode.Create);
-                file.CopyTo(fst);
-                fst.Dispose();
-            }
 
-            //파일정보 저장 
-            var upfile_r = upfileInsert(db, (dynamic)info["upfilecat_rowid"], ext, filename, info["subPath"] + "\\" + newfilename);
-            if(0 == upfile_r) {
-                log("File information save failed");
-                var fi = new FileInfo(savePath);
-                try {
-                    fi.Delete();
-                } catch(IOException e) {
-                    log(e.Message);
+                //파일정보 저장 
+                var upfile_r = await upfileInsert(db, to<int>(info["upfilecat_rowid"]), ext, filename, info["subPath"] + "\\" + newfilename);
+                if(0 == upfile_r) {
+                    log("File information save failed");
+                    var fi = new FileInfo(savePath);
+                    try {
+                        fi.Delete();
+                    } catch(IOException e) {
+                        log(e.Message);
+                    }
+                    return false;
                 }
-                return null;
-            }
 
-            //결과 반환 
-            return upfileResult(db, upfile_r);
+                //결과 반환 
+                result = await upfileResult(db, upfile_r);
+                return true;
+            });
+            return result;
         }
         private static void upfileInit(string db) {
             if(!upfileIsInit.ContainsKey(db)) {
@@ -110,15 +115,17 @@ namespace com.bsidesoft.cs {
                 dbQuery(db, "upfile/get", "select t0.upfile_rowid,t0.originname,t0.upfile,t2.title cat,t2.basepath,t1.title ext,t0.regdate from upfile t0 left join upfilecatext t1 on t0.upfilecatext_rowid=t1.upfilecatext_rowid left join upfilecat t2 on t1.upfilecat_rowid=t2.upfilecat_rowid where upfile_rowid=@upfile_rowid:int@");
             }
         }
-        private static Dictionary<string, object> upfileReady(string db, string catname) {
+        private static async Task<Dictionary<string, object>> upfileReady(SqlHandler db, string catname) {
             var key = db + ":" + catname;
             Dictionary<string, object> result = null;
             if(upfileCatInfo.ContainsKey(key)) {
                 result = upfileCatInfo[key];
             } else {
-                upfileInit(db);
-                var err = valiResult();
-                var cat = dbSelect<Dictionary<String, String>>(out err, db + ":upfile/get_cat", "title", catname);
+                var rs = await db.selectAsync<Dictionary<String, String>>("upfile/get_cat", "title", catname);
+                if(rs.noRecord || rs.valiError) {
+                    return null;
+                }
+                var cat = rs.result;
                 if(null == cat) {
                     log("A category name is not valid. name = " + catname);
                     return null;
@@ -158,27 +165,26 @@ namespace com.bsidesoft.cs {
             }
             return result;
         }
-        private static int upfileInsert(string db, int upfilecat_r, string ext, string originname, string upfile) {
-            var err = valiResult();
-            int insertId;
-            if(1 != dbExec(out err, out insertId, db + ":upfile/add", "upfilecat_rowid", upfilecat_r + "", "ext", ext, "originname", originname, "upfile", upfile)) {
-                return 0;
+        private static async Task<int> upfileInsert(SqlHandler db, int upfilecat_r, string ext, string originname, string upfile) {
+            var rs = await db.execAsync("upfile/add", "upfilecat_rowid", upfilecat_r + "", "ext", ext, "originname", originname, "upfile", upfile);
+            if(!rs.noRecord && !rs.valiError && rs.result == 1) {
+                return rs.insertId;
             }
-            return insertId;
+            return 0;
         }
-        private static UpfileResult upfileResult(string db, int upfile_r) {
-            var err = valiResult();
-            var rs = dbSelect<Dictionary<String, String>>(out err, db + ":upfile/get", "upfile_rowid", upfile_r + "");
-            if(null == rs) {
+        private static async Task<UpfileResult> upfileResult(SqlHandler db, int upfile_r) {
+            var rs = await db.selectAsync<Dictionary<String, String>>("upfile/get", "upfile_rowid", upfile_r + "");
+            if(rs.noRecord || rs.valiError) {
                 return null;
             }
+            var obj = rs.result;
             return new UpfileResult() {
-                r = to<int>(rs["upfile_rowid"]),
-                originname = rs["originname"],
-                upfile = rs["upfile"],
-                cat = rs["cat"],
-                ext = rs["ext"],
-                regdate = rs["regdate"] //TODO 날짜 형태를 맞출 것 
+                r = to<int>(obj["upfile_rowid"]),
+                originname = obj["originname"],
+                upfile = obj["upfile"],
+                cat = obj["cat"],
+                ext = obj["ext"],
+                regdate = obj["regdate"] //TODO 날짜 형태를 맞출 것 
             };
         }
         public static string upfileName(IFormFile file) {
