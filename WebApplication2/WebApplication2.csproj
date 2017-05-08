@@ -19,6 +19,12 @@
 
   <ItemGroup>
     <Content Include="wwwroot\test.html" />
+    <Content Include="wwwroot\__test\contents.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\__test\student.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
@@ -35,7 +41,9 @@
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="test\" />
-    <Folder Include="wwwroot\upfile\" />
+    <Folder Include="wwwroot\upfile\con10\" />
+    <Folder Include="wwwroot\upfile\con20\" />
+    <Folder Include="wwwroot\upfile\device\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Web.config" />
