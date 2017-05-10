@@ -6,20 +6,13 @@ using System.Security.Cryptography;
 using Xunit;
 
 namespace test {
-    public class bsRsa
-    {
-        private bs bs;
+    public class bsRsa:bs.Test {
         private R​SA​Parameters p = new R​SA​Parameters();
-        public bsRsa()
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                //.AddJsonFile("D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
-                //.AddJsonFile("C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("C:\\Users\\user\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables();
-            var bs = new bs(null, null);
-            bs.service(builder.Build(), null);
+        public bsRsa() : base(
+            "C:\\Users\\user\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2",
+            "D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2",
+            "C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2"
+        ) {
             var n = BigInteger.Parse("19579160939939334264971282204525611731944172893619019759209712156289528980860378672033164235760825723282900348193871051950190013953658941960463089031452404364269503721476236241284015792700835264262839734314564696723261501877759107784604657504350348081273959965406686529089170062268136253938904906635532824296510859016002105655690559115059267476786307037941751235763572931501055146976797606538425089134251611194500570922973015579287289778637105402129208324300035518642730384616767241853993887666288072512402523498267733725021939287517009966986976768028023180137546958580922532786773172365428677544232641888174470601681");
             var e = BigInteger.Parse("65537");
             p.Modulus = n.ToByteArray();

@@ -4,20 +4,12 @@ using System.IO;
 using Xunit;
 
 namespace test {
-    public class bsFile
-    {
-        private bs bs;
-        public bsFile()
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                //.AddJsonFile("D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
-                //.AddJsonFile("C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("C:\\Users\\user\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2\\appsettings.json", optional: false, reloadOnChange: true)
-                .AddEnvironmentVariables();
-            var bs = new bs(null, null);
-            bs.service(builder.Build(), null);
-        }
+    public class bsFile:bs.Test {
+        public bsFile() : base(
+            "C:\\Users\\user\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2",
+            "D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2",
+            "C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2"
+        ) { }
         [Fact]
         public void Test16() {
             //bs.file<string>("testtest", false, "test.txt");
