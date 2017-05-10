@@ -38,7 +38,7 @@ namespace com.bsidesoft.cs {
             var result = default(T);
             if(!File.Exists(path)) return result;
             switch(TYPES[typeof(T)]) {
-            case "string": return to<T>(File.ReadAllText(path)));
+            case "string": return to<T>(File.ReadAllText(path));
             case "string[]": return to<T>(File.ReadAllLines(path));
             case "byte[]": return to<T>(File.ReadAllBytes(path));
             case "filestream": return to<T>(new FileStream(path, FileMode.Open));

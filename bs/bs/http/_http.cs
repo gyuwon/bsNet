@@ -18,7 +18,7 @@ namespace com.bsidesoft.cs {
             try {
                 return JObject.Parse(new StreamReader(r.Body, Encoding.UTF8, true, 20000, true).ReadToEnd());
             } catch(Exception e) {
-                log("JSON 해석 오류. " + e.Message);
+                log("reqJson:fail to parse JSON - " + e.Message);
                 return new JObject();
             }
         }
