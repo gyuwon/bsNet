@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
@@ -31,11 +32,11 @@ namespace com.bsidesoft.cs {
                 }
             }
             return opt;
-        }   
+        }
 
         public static Dictionary<string, object> json2kv(JObject j, params String[] keys) {
             var result = new Dictionary<string, object>();
-            foreach (var k in keys) {
+            foreach(var k in keys) {
                 JToken v;
                 if(j.TryGetValue(k, out v)) {
                     result.Add(k, v + "");
@@ -45,5 +46,18 @@ namespace com.bsidesoft.cs {
             }
             return result;
         }
+
+        public static string base64Encode(string EncodingText, Encoding oEncoding = null) {
+            if(oEncoding == null) oEncoding = Encoding.UTF8;
+            byte[] arr = oEncoding.GetBytes(EncodingText);
+            return Convert.ToBase64String(arr);
+        }
+
+        public static string base64Decode(string DecodingText, Encoding oEncoding = null) {
+            if(oEncoding == null) oEncoding = Encoding.UTF8;
+            byte[] arr = Convert.FromBase64String(DecodingText);
+            return oEncoding.GetString(arr);
+        }
+
     }
 }

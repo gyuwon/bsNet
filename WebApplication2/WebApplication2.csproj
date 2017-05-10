@@ -50,6 +50,7 @@
     <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="test\" />
     <Folder Include="wwwroot\upfile\con10\" />
+    <Folder Include="wwwroot\upfile\con10\2017\05\08\" />
     <Folder Include="wwwroot\upfile\con20\" />
     <Folder Include="wwwroot\upfile\device\" />
   </ItemGroup>

@@ -15,7 +15,12 @@ namespace com.bsidesoft.cs {
             return r.Path;
         }
         public static JObject reqJson(HttpRequest r) {
-            return JObject.Parse(new StreamReader(r.Body, Encoding.UTF8, true, 20000, true).ReadToEnd());
+            try {
+                return JObject.Parse(new StreamReader(r.Body, Encoding.UTF8, true, 20000, true).ReadToEnd());
+            } catch(Exception e) {
+                log("JSON 해석 오류. " + e.Message);
+                return new JObject();
+            }
         }
         public static async Task<T> GET<T>(string url, params object[] arg) {
             return await http<T>(HttpMethod.Get, url, opt<object>(arg));

@@ -123,12 +123,12 @@ namespace com.bsidesoft.cs {
         public static void db(bool isTransaction, string target, Func<SqlHandler, bool> f) {
             var conn = dbConnGet(target);
             var cmd = conn.CreateCommand();
+            conn.Open();
             SqlTransaction ts = null;
             if(isTransaction) {
-                ts = conn.BeginTransaction(Guid.NewGuid() + "");
+                ts = conn.BeginTransaction((Guid.NewGuid() + "").Substring(0, 32));
                 cmd.Transaction = ts;
             }
-            conn.Open();
             var result = f(new SqlHandler(cmd));
             if(isTransaction) {
                 if(result) {
@@ -155,12 +155,12 @@ namespace com.bsidesoft.cs {
         public static async Task dbAsync(bool isTransaction, string target, Func<SqlHandler, Task<bool>> f) {
             var conn = dbConnGet(target);
             var cmd = conn.CreateCommand();
+            await conn.OpenAsync();
             SqlTransaction ts = null;
             if(isTransaction) {
-                ts = conn.BeginTransaction(Guid.NewGuid() + "");
+                ts = conn.BeginTransaction((Guid.NewGuid() + "").Substring(0, 32));
                 cmd.Transaction = ts;
             }
-            await conn.OpenAsync();
             var result = await f(new SqlHandler(cmd));
             if(isTransaction) {
                 if(result) {
