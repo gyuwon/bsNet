@@ -48,6 +48,7 @@ namespace com.bsidesoft.cs {
         private static void dbInit(IConfigurationRoot configuration) {
             var dbPath = configuration.GetSection("Databases")["Path"];
             var dbDir = pathNormalize(false, dbPath.Split('/')); //전체 Dir
+            if(!Directory.Exists(dbDir)) return;
             string[] dbConnDirList = Directory.GetDirectories(dbDir);
             foreach(var dbConnDir in dbConnDirList) {
                 //DB 연결 
