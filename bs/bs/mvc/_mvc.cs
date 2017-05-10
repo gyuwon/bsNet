@@ -61,7 +61,7 @@ namespace com.bsidesoft.cs {
             return ApiResult.get(null, new { code = 0, msg = msg });
         }
         public static ApiResult apiFail(Dictionary<string, ValiResult> vali) {
-            return ApiResult.get(null, new { code = 0, msg = "유효하지 ", vali = toDicValiResult(vali) });
+            return ApiResult.get(null, new { code = 0, msg = "유효하지 않은 값입니다.", vali = toDicValiResult(vali) });
         }
         public static ApiResult apiOk(Object data) {
             return ApiResult.get(data, null);
