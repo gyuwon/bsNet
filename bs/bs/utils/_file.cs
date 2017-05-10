@@ -38,11 +38,12 @@ namespace com.bsidesoft.cs {
             var result = default(T);
             if(!File.Exists(path)) return result;
             switch(TYPES[typeof(T)]) {
-            case "string": return (dynamic)File.ReadAllText(path);
-            case "string[]": return (dynamic)File.ReadAllLines(path);
-            case "filestream": return (dynamic)new FileStream(path, FileMode.Open);
-            case "streamreader": return (dynamic)new StreamReader(new FileStream(path, FileMode.Open));
-            case "jobject": return (dynamic)JObject.Parse(File.ReadAllText(path));
+            case "string": return to<T>(File.ReadAllText(path)));
+            case "string[]": return to<T>(File.ReadAllLines(path));
+            case "byte[]": return to<T>(File.ReadAllBytes(path));
+            case "filestream": return to<T>(new FileStream(path, FileMode.Open));
+            case "streamreader": return to<T>(new StreamReader(new FileStream(path, FileMode.Open)));
+            case "jobject": return to<T>(JObject.Parse(File.ReadAllText(path)));
             default: log("fileRead:invalid T - " + typeof(T)); break;
             }
             return result;
