@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -11,7 +12,12 @@ namespace com.bsidesoft.cs {
             return r.Path;
         }
         public static JObject reqJson(HttpRequest r) {
-            return JObject.Parse(new StreamReader(r.Body, Encoding.UTF8, true, 20000, true).ReadToEnd());
+            try {
+                return JObject.Parse(new StreamReader(r.Body, Encoding.UTF8, true, 20000, true).ReadToEnd());
+            } catch(Exception e) {
+                log("JSON 해석 오류. " + e.Message);
+                return new JObject();
+            }
         }
         public static async Task<T> GET<T>(string url) {
             var client = new HttpClient();

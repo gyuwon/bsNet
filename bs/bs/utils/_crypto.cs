@@ -23,5 +23,11 @@ namespace com.bsidesoft.cs {
                 return null;
             }
         }
+        static public string md5(string input) {
+            using(var md5 = MD5.Create()) {
+                var result = md5.ComputeHash(Encoding.ASCII.GetBytes(input));
+                return Encoding.ASCII.GetString(result);
+            }
+        }
     }
 }

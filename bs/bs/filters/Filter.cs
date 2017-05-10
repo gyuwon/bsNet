@@ -30,7 +30,6 @@ namespace com.bsidesoft.cs {
             public void OnActionExecuted(ActionExecutedContext c) {
                 //head일반처리
                 //c.HttpContext.Response.Headers.Add("Content-Type", "application/json");
-
             }
             private bool invokeJson(ActionExecutingContext c) {
                 var json = fr<JObject>(false, "Controllers", c.RouteData.Values["controller"] + "", c.RouteData.Values["action"] + ".json");
