@@ -18,6 +18,7 @@ namespace test {
             p.Modulus = n.ToByteArray();
             p.Exponent = e.ToByteArray();
         }
+        /*
         [Fact]
         public void Test1() {
             var a = bs.rsaEncrypt("test", p, false);
@@ -25,7 +26,7 @@ namespace test {
             var b = bs.rsaDecrypt(a, p, false);
             Assert.Equal("test", b);
         }
-        /*
+        
         [Fact]
         public void Test0() {
             bs.vali("test0", "a", "html", "b", "image");
