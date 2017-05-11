@@ -19,4 +19,7 @@
     <Folder Include="db\bs\" />
     <Folder Include="filters\bs\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.NETCore.App" Version="1.1.2" />
+  </ItemGroup>
 </Project>
