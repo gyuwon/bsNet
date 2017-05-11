@@ -13,12 +13,17 @@ namespace WebApplication2.Controllers {
         private bs bs;
         public ContentsController(bs b) {
             bs = b;
-            if(bs.S("ContentsController/upfileFilter") == null) {
-                bs.S("ContentsController/upfileFilter", true);
+            //문서 파일 
+            string con10CheckKey = "ContentsController/upfileFilter/con10Check";
+            if(bs.S(con10CheckKey) == null) {
+                bs.S(con10CheckKey, true);
                 bs.upfileFilterAdd("con10Check", (Stream data, string ext) => {
                     return data;
                 });
             }
+
+            //동영상 파일 
+
         }
         public Dictionary<string, object> _list(ActionExecutingContext c) {
             var j = bs.reqJson(c.HttpContext.Request); //{"r":3}
@@ -30,7 +35,7 @@ namespace WebApplication2.Controllers {
             }
             var result = bs.valiResult();
             if(!bs.vali(k).check(out result, bs.json2kv(j, "r"))) {
-                bs.s("valiError", bs.toDicValiResult(result));
+                bs.s("valiError", result);
                 return null;
             } else {
                 return new Dictionary<string, object>() {
@@ -42,11 +47,10 @@ namespace WebApplication2.Controllers {
         public async Task<IActionResult> list() {
             var before = (Dictionary<string, object>)bs.before(this);
             if(null == before) {
-                //return bs.beforeErr();
                 if(null == bs.s("valiError")) {
-                    return Json(new { error = "알 수 없는 에러 발생" });
+                    return bs.apiFail("알 수 없는 에러 발생");
                 } else {
-                    return Json(new { error = "유효성 검사 에러 발생", vali = bs.s("valiError") });
+                    return bs.apiFail((Dictionary<string,bs.ValiResult>)bs.s("valiError"));
                 }
             }
             List<Dictionary<String, String>> catList = null;
@@ -68,31 +72,14 @@ namespace WebApplication2.Controllers {
                 return true;
             });
             if(errorMsg != null) {
-                return Json(new { error = errorMsg });
+                return bs.apiFail(errorMsg);
             }
-            return Json(new { cat = catList, list = contentsList });
+            return bs.apiOk(new { cat = catList, list = contentsList });
         }
         [HttpPost]
         public async Task<IActionResult> add(IFormFile upfile) {
             var result = await bs.upfileAdd("remote", "con10", upfile);
-            return Json(new { upfile = result });
+            return bs.apiOk(new { upfile = result });
         }
-        public string _Index(ActionExecutingContext c) {
-            var a = JObject.Parse("{}");
-            return "test";
-        }
-        public async Task<IActionResult> Index() {
-            List<Object[]> data = null;
-            await bs.dbAsync(false, "remote", async (db) => {
-                var rs = await db.selectAsync<List<Object[]>>("test:a", "title", "1PD시험a");
-                if(rs.noRecord || rs.valiError) return false;
-                data = rs.result;
-                return true;
-            });
-
-            var isExist = bs.dbIsExistTable("remote", "cls");
-            return Json(new { isExist = isExist, data = data, a = bs.before(this) });
-        }
-       
     }
 }

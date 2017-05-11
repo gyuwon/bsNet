@@ -39,7 +39,7 @@ namespace WebApplication2.Controllers {
                 if(null == bs.s("valiError")) {
                     return bs.apiFail("알 수 없는 에러 발생");
                 } else {
-                    return bs.apiFail((dynamic)bs.s("valiError"));
+                    return bs.apiFail((Dictionary<string, bs.ValiResult>)bs.s("valiError"));
                 }
             }
             Dictionary<String, String> teacher = null;
@@ -110,7 +110,7 @@ namespace WebApplication2.Controllers {
                 if(null == bs.s("valiError")) {
                     return bs.apiFail("알 수 없는 에러 발생");
                 } else {
-                    return bs.apiFail((dynamic)bs.s("valiError"));
+                    return bs.apiFail((Dictionary<string, bs.ValiResult>)bs.s("valiError"));
                 }
             }
             String errMsg = null;
@@ -163,7 +163,7 @@ namespace WebApplication2.Controllers {
                 if(null == bs.s("valiError")) {
                     return bs.apiFail("알 수 없는 에러 발생");
                 } else {
-                    return bs.apiFail((dynamic)bs.s("valiError"));
+                    return bs.apiFail((Dictionary<string, bs.ValiResult>)bs.s("valiError"));
                 }
             }
             String errMsg = null;
@@ -217,7 +217,7 @@ namespace WebApplication2.Controllers {
                 if(null == bs.s("valiError")) {
                     return bs.apiFail("알 수 없는 에러 발생");
                 } else {
-                    return bs.apiFail((dynamic)bs.s("valiError"));
+                    return bs.apiFail((Dictionary<string, bs.ValiResult>)bs.s("valiError"));
                 }
             }
             String errMsg = null;

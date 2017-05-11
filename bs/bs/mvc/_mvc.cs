@@ -8,14 +8,6 @@ using System.Threading.Tasks;
 
 namespace com.bsidesoft.cs {
     public partial class bs {
-        public static object before(Controller c) {
-            return c.ViewBag.bsBefore;
-        }
-
-        private static Dictionary<string, string> CONTENT_TYPE = new Dictionary<string, string>(){
-            {"xslx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
-        };
-
         public class ApiResult:IActionResult {
             private static ConcurrentStack<ApiResult> pool = new ConcurrentStack<ApiResult>();
             internal static ApiResult get(object d, object e) {
@@ -38,7 +30,6 @@ namespace com.bsidesoft.cs {
                 error = e;
                 return this;
             }
-            
             public async Task ExecuteResultAsync(ActionContext context) {
                 context.HttpContext.Response.Headers.Add("Content-Type", "application/json");
                 object obj;
@@ -66,7 +57,14 @@ namespace com.bsidesoft.cs {
         public static ApiResult apiOk(Object data) {
             return ApiResult.get(data, null);
         }
-       
+
+        public static object before(Controller c) {
+            return c.ViewBag.bsBefore;
+        }
+
+        private static Dictionary<string, string> CONTENT_TYPE = new Dictionary<string, string>(){
+            {"xslx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
+        };
 
         public PhysicalFileResult downXlsx(FileInfo i) {
             return down("xslx", i.FullName);

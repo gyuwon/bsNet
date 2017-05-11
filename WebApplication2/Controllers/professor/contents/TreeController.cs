@@ -16,6 +16,31 @@ namespace WebApplication2.Controllers {
             var k = bs.reqPath(c.HttpContext.Request); //professor/contents/tree/list
             return new Dictionary<string, object>() { };
         }
+        /*
+        internal class ConTree {
+            internal int r;
+            internal string title;
+            //private string collapsedisplay;
+            //private string bgcolor;
+            internal List<ConTree> tree;
+
+            public Object toObject() {
+                var list = new List<Object>();
+                foreach(var a in tree) {
+                    list.Add(a.toObject());
+                }
+                var collapsedisplay = "";
+                var bgcolor = "";
+                return new {
+                    r = r,
+                    title = title,
+                    collapsedisplay = collapsedisplay,
+                    bgcolor = bgcolor,
+                    tree = list
+                };
+            }
+        }*/
+
         [HttpPost]
         public async Task<IActionResult> list() {
             List<Dictionary<string, string>> list = null;
@@ -35,9 +60,32 @@ namespace WebApplication2.Controllers {
             });
             //contree_rowid,parent_rowid,title,ord,regdate
             if(errMsg != null) bs.apiFail(errMsg);
+
+            string key = "";
+            int i, j;
+            Dictionary<string, string> t0;
+            var data = new Dictionary<string, Dictionary<string, Dictionary<string, string>>>();
+            for(i = 0, j = list.Count; i < j; i++) {
+                t0 = list[i];
+                string pr = t0["parent_rowid"];
+                if(i == 0) key = pr;
+                if(!data.ContainsKey(pr)) {
+                    data.Add(pr, new Dictionary<string, Dictionary<string, string>>());
+                }
+                data[pr].Add(t0["contree_rowid"], t0);
+            }
+            /*
+            var conTreeList = new List<ConTree>();
+            conTreeList.Add(new ConTree() {
+                r = 1,
+                title = "aaa",
+                tree = new List<ConTree>()
+            });
+            */
             return bs.apiOk(new {
                 success = 1,
-                data = list
+                data = data,
+                key = key
             });
         }
         //professor/contents/tree/add
@@ -62,33 +110,6 @@ namespace WebApplication2.Controllers {
             }
         }
         [HttpPost]
-        public IActionResult add() {
-            var before = (Dictionary<string, object>)bs.before(this);
-            if(null == before) {
-                if(bs.s("valiError") == null) {
-                    return bs.apiFail("알 수 없는 에러 발생");
-                } else {
-                    return bs.apiFail((Dictionary<string, bs.ValiResult>)bs.s("valiError"));
-                }
-            }
-            String errMsg = null;
-            bs.db(false, "remote", (db) => {
-                var pr = db.select<int>("contents/tree/view", before);
-                if(pr.noRecord) {
-                    errMsg = "트리의 부모 정보를 가져오지 못했습니다.";
-                    return false;
-                }
-                before.Add("parent_rowid", pr.result);
-                var rs = db.exec("contents/tree/add", before);
-                if(rs.result != 1) {
-                    errMsg = "트리를 등록하는데 실패했습니다.";
-                    return false;
-                }
-                return true;
-            });
-            if(errMsg != null) return bs.apiFail(errMsg);
-            return bs.apiOk(new { success = 1 });
-        }/*
         public async Task<IActionResult> add() {
             var before = (Dictionary<string, object>)bs.before(this);
             if(before == null) {
@@ -115,7 +136,7 @@ namespace WebApplication2.Controllers {
             });
             if(errMsg != null) return bs.apiFail(errMsg);
             return bs.apiOk(new { success = 1 });
-        }*/
+        }
         //professor/contents/tree/edit
         public Dictionary<string, object> _edit(ActionExecutingContext c) {
             var j = bs.reqJson(c.HttpContext.Request); //{"r":3, "title":"트리 수정"}

@@ -15,7 +15,7 @@ namespace com.bsidesoft.cs {
                 };
             }
         }
-        public static Dictionary<string, Dictionary<string, Object>> toDicValiResult(Dictionary<string, ValiResult> valiResult) {
+        private static Dictionary<string, Dictionary<string, Object>> toDicValiResult(Dictionary<string, ValiResult> valiResult) {
             var result = new Dictionary<string, Dictionary<string, Object>>();
             foreach (var vali in valiResult) {
                 result.Add(vali.Key, vali.Value.toDic());

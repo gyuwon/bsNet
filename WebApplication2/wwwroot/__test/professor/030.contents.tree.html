@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>professor 컨텐츠 트리 관리</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0
+        }
+
+        #doc {
+            margin: 10px
+        }
+    </style>
+</head>
+<body>
+    <script src="../js/bs.js"></script>
+    <script src="../js/test.js"></script>
+    <script src="../js/test-extend.js"></script>
+    <script>
+        "use strict"
+        bs(
+            'professor/contents/tree/list', (i, title, req, check) => {
+                return {
+                    msg: `${i}. 트리리스트 - ${title}`,
+                    net: ['post', bs('path')(i, '/professor/contents/tree/list'), 'json', req], //{ r: "2" }
+                    success: v => {
+                        //bs('professor.r', v.professor.r);
+                        return v;
+                    },
+                    check: check
+                };
+            }
+        );
+        TEST.add(
+            'tree',
+            bs('professor/contents/tree/list')(
+                1, '정상',
+                {}, 
+                v => bs('ok')(v)
+            )
+        );
+        TEST.start('tree');
+    </script>
+</body>
+</html>

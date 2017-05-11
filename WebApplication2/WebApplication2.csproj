@@ -18,10 +18,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\200x200.jpg" />
     <Content Include="wwwroot\test.html" />
+    <Content Include="wwwroot\__test\bs.js" />
     <Content Include="wwwroot\__test\contents.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="wwwroot\__test\js\bs.js" />
+    <Content Include="wwwroot\__test\js\test-extend.js" />
+    <Content Include="wwwroot\__test\js\test.js" />
+    <Content Include="wwwroot\__test\professor\001 - Copy.basic.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\__test\professor\001.basic.html" />
+    <Content Include="wwwroot\__test\professor\030.contents.tree.html" />
     <Content Include="wwwroot\__test\rsa.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
