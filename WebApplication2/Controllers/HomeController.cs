@@ -116,5 +116,10 @@ namespace WebApplication2.Controllers {
             package.Save();
             return bs.downXlsx(fi);
         }
+
+        [HttpPost]
+        public string httppost0(string a, string b) {
+            return a + "::" + b;
+        }
     }
 }

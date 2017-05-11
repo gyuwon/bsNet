@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\200x200.jpg" />
     <Content Include="wwwroot\test.html" />
     <Content Include="wwwroot\__test\bs.js" />
     <Content Include="wwwroot\__test\contents.html">
