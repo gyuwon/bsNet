@@ -107,14 +107,11 @@ namespace com.bsidesoft.cs {
                             if(rule.Contains("int")) type = fieldType["int"];
                             else if(rule.Contains("float")) type = fieldType["float"];
                             else type = fieldType["nvarchar"];
-
                         }
                         vali.add(key, rule);
                         keys.Add(key, 0);
-                    } else {
-                        id = ++keys[key];
-                    }
-                    param.Add(new Item() { key = key, type = type });
+                        param.Add(new Item() { key = key, type = type });
+                    } else id = ++keys[key];
                     return "@" + key + "_" + id;
                 } else {
                     replacer.Add(v);

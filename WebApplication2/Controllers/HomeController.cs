@@ -23,6 +23,15 @@ namespace WebApplication2.Controllers {
             var a = JObject.Parse("{}");
             return "test";
         }
+        public async Task<IActionResult> query0() {
+            bs.dbQuery("test", "hika0", "select * from hika00 where title in(@title:hika00.title@,@title:hika00.title@)");
+            var r = bs.dbResult<List<object[]>>();
+            await bs.dbAsync(false, "test", async(db)=>{
+                r = await db.selectAsync<List<object[]>>("hika0", "title", "hika");
+                return true;
+            });
+            return Json(new {r=r});
+        }
         public async Task<IActionResult> Index() {
             var result = bs.dbResult<List<Object[]>>();
             await bs.dbAsync(false, "test", async (db) => {
