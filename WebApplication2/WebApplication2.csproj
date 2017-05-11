@@ -18,14 +18,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\200x200.jpg" />
     <Content Include="wwwroot\test.html" />
+    <Content Include="wwwroot\__test\bs.js" />
     <Content Include="wwwroot\__test\contents.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\__test\js\bs.js" />
-    <Content Include="wwwroot\__test\js\security.js" />
     <Content Include="wwwroot\__test\js\test-extend.js" />
     <Content Include="wwwroot\__test\js\test.js" />
+    <Content Include="wwwroot\__test\professor\001 - Copy.basic.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="wwwroot\__test\professor\001.basic.html" />
     <Content Include="wwwroot\__test\professor\030.contents.tree.html" />
     <Content Include="wwwroot\__test\rsa.html">
@@ -33,6 +37,9 @@
     </Content>
     <Content Include="wwwroot\__test\security.js" />
     <Content Include="wwwroot\__test\student.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+     <Content Include="Databases\**\*.*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
@@ -54,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
-    <Folder Include="test\" />
+    <Folder Include="Databases\" />
     <Folder Include="wwwroot\upfile\con10\" />
     <Folder Include="wwwroot\upfile\con10\2017\05\08\" />
     <Folder Include="wwwroot\upfile\con20\" />
@@ -67,20 +74,8 @@
     <ProjectReference Include="..\bs\bs.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Update="Microsoft.NETCore.App" Version="1.1.2" />
   </ItemGroup>
+ 
 
 </Project>

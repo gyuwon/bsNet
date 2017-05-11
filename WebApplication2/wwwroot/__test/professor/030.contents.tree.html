@@ -28,85 +28,27 @@
     <script>
         "use strict"
         bs(
-            'professor/add', (i, title, req, check) => {
+            'professor/contents/tree/list', (i, title, req, check) => {
                 return {
-                    msg: `${i}. 교수등록 - ${title}`,
-                    net: ['post', bs('path')(i, '/professor/add'), 'json', req], //{ cmps_r: "114", username: "김아무개" }
+                    msg: `${i}. 트리리스트 - ${title}`,
+                    net: ['post', bs('path')(i, '/professor/contents/tree/list'), 'json', req], //{ r: "2" }
                     success: v => {
-                        bs('professor.r', v.professor.r);
+                        //bs('professor.r', v.professor.r);
                         return v;
                     },
                     check: check
                 };
-            },
-            'professor/view1', (i, title, req, check) => {
-                return {
-                    msg: `${i}. 교수정보1 - ${title}`,
-                    net: ['post', bs('path')(i, '/professor/view1'), 'json', req], // { cmps_r: "110" }
-                    check: check
-                };
-            },
-            'professor/view2', (i, title, req, check) => {
-                return {
-                    msg: `${i}. 교수정보2 - ${title}`,
-                    net: ['post', bs('path')(i, '/professor/view2'), 'json', req], // { r: "16" }
-                    check: check
-                };
-            },
-            'professor/edit', (i, title, req, check) => {
-                return {
-                    msg: `${i}. 교수이름편집 - ${title}`,
-                    net: ['post', bs('path')(i, '/professor/view2'), 'json', req], //{ cmps_r: "110", "username": "김수정" }
-                    check: check
-                };
-            },
+            }
         );
-        bs('professor', {
-            cmps_r: '131',
-            username: '김아무개'
-        });
         TEST.add(
-            'professor',
-            bs('professor/add')(
+            'tree',
+            bs('professor/contents/tree/list')(
                 1, '정상',
-                bs('professor'), 
-                v => bs('ok')(v, 'professor.username', bs('professor.username'), 'professor.cmps_r', bs('professor.cmps_r'))
-            ),
-            bs('professor/view1')(
-                2, '정상',
-                { cmps_r: bs('professor.cmps_r') },
-                v => bs('ok')(v, 'professor.username', bs('professor.username'), 'professor.cmps_r', bs('professor.cmps_r'))
-            ),
-            bs('professor/view2')(
-                3, '정상',
-                { r: _=>bs('professor.r') },
-                v => bs('ok')(v, 'professor.username', bs('professor.username'), 'professor.cmps_r', bs('professor.cmps_r'))
+                {}, 
+                v => bs('ok')(v)
             )
         );
-
-        TEST.add(
-            'professor2',
-            bs('professor/view1')(
-                2, '정상',
-                { cmps_r: bs('professor.cmps_r') },
-                v => bs('ok')(v, 'professor.username', bs('professor.username'), 'professor.cmps_r', bs('professor.cmps_r'))
-            ),
-            bs('professor/view2')(
-                3, '정상',
-                { r: _ => bs('professor.r') },
-                v => bs('ok')(v, 'professor.username', bs('professor.username'), 'professor.cmps_r', bs('professor.cmps_r'))
-            )
-        );
-
-        TEST.add(
-            'professor',
-            bs('professor/view1')(
-                2, '정상',
-                { cmps_r: bs('professor.cmps_r') },
-                v => bs('ok')(v, 'professor.username', bs('professor.username'), 'professor.cmps_r', bs('professor.cmps_r'))
-            )
-        );
-        TEST.start('professor', 'professor2');
+        TEST.start('tree');
     </script>
 </body>
 </html>
