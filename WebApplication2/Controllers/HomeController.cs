@@ -23,6 +23,10 @@ namespace WebApplication2.Controllers {
             var a = JObject.Parse("{}");
             return "test";
         }
+        [HttpPost]
+        public string testText(string a, string b) {
+            return a + "::" + b;
+        }
         public async Task<IActionResult> query0() {
             bs.dbQuery("test", "hika0", "select * from hika00 where title in(@title:hika00.title@,@title:hika00.title@)");
             var r = bs.dbResult<List<object[]>>();

@@ -29,6 +29,9 @@
     <Content Include="wwwroot\__test\student.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+     <Content Include="Databases\**\*.*">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
@@ -48,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
-    <Folder Include="test\" />
+    <Folder Include="Databases\" />
     <Folder Include="wwwroot\upfile\con10\" />
     <Folder Include="wwwroot\upfile\con10\2017\05\08\" />
     <Folder Include="wwwroot\upfile\con20\" />
@@ -63,5 +66,6 @@
   <ItemGroup>
     <PackageReference Update="Microsoft.NETCore.App" Version="1.1.2" />
   </ItemGroup>
+ 
 
 </Project>
