@@ -10,7 +10,8 @@ namespace test {
         public bsHttp() : base(
             "C:\\Users\\user\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2",
             "D:\\dev\\cmpsedu\\WebApplication2\\WebApplication2",
-            "C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2"
+            "C:\\Users\\hika0\\Documents\\Visual Studio 2017\\Projects\\WebApplication2\\WebApplication2",
+            "D:\\Develop\\cmpsedu\\WebApplication2"
         ) { }
         
         [Fact]
