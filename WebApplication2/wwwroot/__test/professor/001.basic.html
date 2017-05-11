@@ -36,6 +36,9 @@
                         bs('professor.r', v.professor.r);
                         return v;
                     },
+                    fail: v => {
+                        return v;
+                    },
                     check: check
                 };
             },
@@ -62,7 +65,7 @@
             },
         );
         bs('professor', {
-            cmps_r: '131',
+            cmps_r: '132',
             username: '김아무개'
         });
         TEST.add(

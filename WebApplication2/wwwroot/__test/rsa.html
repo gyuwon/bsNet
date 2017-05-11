@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <title>RSA</title>
+    <title>암호화 통신 테스트</title>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -22,12 +22,56 @@
     </style>
 </head>
 <body>
-    <script src="//www.bsidesoft.com/api/js/5/build/test.php"></script>
-    <script src="security.js"></script>
+    <script src="js/bs.js"></script>
+    <script src="js/test.js"></script>
+    <script src="js/test-extend.js"></script>
+    <script src="js/security.js"></script>
     <script>
-bs.post(function(v){
-	alert(v);
-}, '../rsa/test', 'email', 'jidolstar@gmail.com', 'pw', 'aaaaa')
+        "use strict"
+        bs(
+            'rsa/login', (i, title, req, check) => {
+                return {
+                    msg: `${i}. 로그인 - ${title}`,
+                    net: ['post', bs('path')(i, '/rsa/login'), 'email', req['email'], 'pw', req['pw']],
+                    check: check
+                };
+            },
+            'rsa/encdec', (i, title, text, check) => {
+                return {
+                    msg: `${i}. 내부 테스트 - ${title}`,
+                    net: ['post', bs('path')(i, '/rsa/encdec'), 'text', text],
+                    check: check
+                };
+            },
+            'rsa/test', (i, title, text, check) => {
+                return {
+                    msg: `${i}. 테스트 - ${title}`,
+                    net: ['get', bs('path')(i, '/rsa/test'), 'text', text],
+                    check: check
+                };
+            }
+        );
+        bs(
+            'email', 'jidolstar@gmail.com',
+            'pw', 'aaaaa',
+            'testText', "테스트 텍스트 23 Hello world"
+        );
+        TEST.add(
+            'rsa',
+            
+            bs('rsa/encdec')(
+                1, '정상',
+                "테스트 텍스트 23 Hello world",
+                v => bs('ok')(v, 'text', bs('testText'))
+            ),
+            
+            bs('rsa/login')(
+                2, '정상',
+                {email: bs('email'), pw: bs('pw')},
+                v => bs('ok')(v, 'username', bs('username'), 'pw', bs('pw'))
+            )
+        );
+        TEST.start('rsa');
     </script>
 </body>
 </html>

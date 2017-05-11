@@ -1,5 +1,5 @@
 bs.rsa(
 	'/rsa/publickey', {
-		'rsa/test':['email','pw']
+		'rsa/login':['email','pw']
 	}
 )
